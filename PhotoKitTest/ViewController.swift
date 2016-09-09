@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 class ViewController: UIViewController {
 
@@ -19,7 +20,13 @@ class ViewController: UIViewController {
 		super.didReceiveMemoryWarning()
 		// Dispose of any resources that can be recreated.
 	}
-
-
+	
+	@IBAction func choosePhoto(sender: AnyObject) {
+		let sb = UIStoryboard(name: "Main", bundle: nil)
+		let vc = sb.instantiateViewControllerWithIdentifier("MyPhotoPickerVC") as! MyPhotoPickerVC
+		let nav = UINavigationController(rootViewController: vc)
+		nav.navigationBar.translucent = true
+		self.presentViewController(nav, animated: true, completion: nil)
+	}
 }
 

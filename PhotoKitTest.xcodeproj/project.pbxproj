@@ -7,13 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CF185EEE1D7FA6320028E1EF /* MyPhotoPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF185EED1D7FA6320028E1EF /* MyPhotoPickerCell.swift */; };
 		CF8CCE891D76CF1200375F44 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCE881D76CF1200375F44 /* AppDelegate.swift */; };
 		CF8CCE8B1D76CF1200375F44 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCE8A1D76CF1200375F44 /* ViewController.swift */; };
-		CF8CCE8E1D76CF1200375F44 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8CCE8C1D76CF1200375F44 /* Main.storyboard */; };
 		CF8CCE901D76CF1200375F44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF8CCE8F1D76CF1200375F44 /* Assets.xcassets */; };
 		CF8CCE931D76CF1200375F44 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8CCE911D76CF1200375F44 /* LaunchScreen.storyboard */; };
 		CF8CCE9E1D76CF1200375F44 /* PhotoKitTestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCE9D1D76CF1200375F44 /* PhotoKitTestTests.swift */; };
 		CF8CCEA91D76CF1200375F44 /* PhotoKitTestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCEA81D76CF1200375F44 /* PhotoKitTestUITests.swift */; };
+		CF8FDC781D7FA87000C34B69 /* MyPhotoPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC771D7FA87000C34B69 /* MyPhotoPickerVC.swift */; };
+		CF8FDC7B1D7FC81200C34B69 /* MyPhotoGridVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC7A1D7FC81200C34B69 /* MyPhotoGridVC.swift */; };
+		CF8FDC7D1D7FD04D00C34B69 /* MyPhotoGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC7C1D7FD04D00C34B69 /* MyPhotoGridCell.swift */; };
+		CF8FDC801D80FC6E00C34B69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8FDC7E1D80FC6E00C34B69 /* Main.storyboard */; };
+		CF8FDC821D8169E500C34B69 /* MyPhotoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,10 +39,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CF185EED1D7FA6320028E1EF /* MyPhotoPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPickerCell.swift; sourceTree = "<group>"; };
 		CF8CCE851D76CF1200375F44 /* PhotoKitTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoKitTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF8CCE881D76CF1200375F44 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CF8CCE8A1D76CF1200375F44 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		CF8CCE8D1D76CF1200375F44 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CF8CCE8F1D76CF1200375F44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CF8CCE921D76CF1200375F44 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CF8CCE941D76CF1200375F44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -47,6 +52,11 @@
 		CF8CCEA41D76CF1200375F44 /* PhotoKitTestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoKitTestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF8CCEA81D76CF1200375F44 /* PhotoKitTestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoKitTestUITests.swift; sourceTree = "<group>"; };
 		CF8CCEAA1D76CF1200375F44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CF8FDC771D7FA87000C34B69 /* MyPhotoPickerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPickerVC.swift; sourceTree = "<group>"; };
+		CF8FDC7A1D7FC81200C34B69 /* MyPhotoGridVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoGridVC.swift; sourceTree = "<group>"; };
+		CF8FDC7C1D7FD04D00C34B69 /* MyPhotoGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoGridCell.swift; sourceTree = "<group>"; };
+		CF8FDC7F1D80FC6E00C34B69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +109,12 @@
 			children = (
 				CF8CCE881D76CF1200375F44 /* AppDelegate.swift */,
 				CF8CCE8A1D76CF1200375F44 /* ViewController.swift */,
-				CF8CCE8C1D76CF1200375F44 /* Main.storyboard */,
+				CF8FDC771D7FA87000C34B69 /* MyPhotoPickerVC.swift */,
+				CF8FDC7A1D7FC81200C34B69 /* MyPhotoGridVC.swift */,
+				CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */,
+				CF185EED1D7FA6320028E1EF /* MyPhotoPickerCell.swift */,
+				CF8FDC7C1D7FD04D00C34B69 /* MyPhotoGridCell.swift */,
+				CF8FDC7E1D80FC6E00C34B69 /* Main.storyboard */,
 				CF8CCE8F1D76CF1200375F44 /* Assets.xcassets */,
 				CF8CCE911D76CF1200375F44 /* LaunchScreen.storyboard */,
 				CF8CCE941D76CF1200375F44 /* Info.plist */,
@@ -229,9 +244,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF8FDC801D80FC6E00C34B69 /* Main.storyboard in Resources */,
 				CF8CCE931D76CF1200375F44 /* LaunchScreen.storyboard in Resources */,
 				CF8CCE901D76CF1200375F44 /* Assets.xcassets in Resources */,
-				CF8CCE8E1D76CF1200375F44 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,8 +271,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF8FDC7D1D7FD04D00C34B69 /* MyPhotoGridCell.swift in Sources */,
+				CF8FDC821D8169E500C34B69 /* MyPhotoPreviewVC.swift in Sources */,
 				CF8CCE8B1D76CF1200375F44 /* ViewController.swift in Sources */,
+				CF185EEE1D7FA6320028E1EF /* MyPhotoPickerCell.swift in Sources */,
 				CF8CCE891D76CF1200375F44 /* AppDelegate.swift in Sources */,
+				CF8FDC781D7FA87000C34B69 /* MyPhotoPickerVC.swift in Sources */,
+				CF8FDC7B1D7FC81200C34B69 /* MyPhotoGridVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,20 +313,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		CF8CCE8C1D76CF1200375F44 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CF8CCE8D1D76CF1200375F44 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		CF8CCE911D76CF1200375F44 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				CF8CCE921D76CF1200375F44 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		CF8FDC7E1D80FC6E00C34B69 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CF8FDC7F1D80FC6E00C34B69 /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -482,6 +502,7 @@
 				CF8CCEAF1D76CF1200375F44 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		CF8CCEB01D76CF1200375F44 /* Build configuration list for PBXNativeTarget "PhotoKitTestTests" */ = {
 			isa = XCConfigurationList;
@@ -490,6 +511,7 @@
 				CF8CCEB21D76CF1200375F44 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		CF8CCEB31D76CF1200375F44 /* Build configuration list for PBXNativeTarget "PhotoKitTestUITests" */ = {
 			isa = XCConfigurationList;
@@ -498,6 +520,7 @@
 				CF8CCEB51D76CF1200375F44 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
