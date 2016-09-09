@@ -25,6 +25,16 @@ class MyPhotoItem: NSObject {
 	}
 }
 
+class MySelectedItem: NSObject {
+    var m_asset: PHAsset!
+    var m_index: NSIndexPath!
+    
+    init(asset: PHAsset, index: NSIndexPath) {
+        self.m_asset = asset
+        self.m_index = index
+    }
+}
+
 class MyPhotoGridVC: UIViewController {
 	
 	@IBOutlet weak var m_collectionView: UICollectionView!
@@ -32,7 +42,7 @@ class MyPhotoGridVC: UIViewController {
 	@IBOutlet weak var m_done: UIBarButtonItem!
 	@IBOutlet weak var m_toolBar: UIToolbar!
 	
-	var m_selectedAssets: [MyPhotoItem]! = []
+	var m_selectedItems: [MySelectedItem]! = []
 	var m_selectedIndex: [NSIndexPath]! = []
 	
 	let m_selectedLabelWidth: CGFloat = 30
@@ -57,7 +67,17 @@ class MyPhotoGridVC: UIViewController {
 	}()
 	
 	var m_fetchResult: PHFetchResult!
-	
+    
+    lazy var m_allAssets: [PHAsset] = {
+        var tempArr: [PHAsset] = []
+        for i in 0 ..< self.m_fetchResult.count {
+            let asset = self.m_fetchResult[i] as! PHAsset
+            tempArr.append(asset)
+        }
+        
+        return tempArr
+    }()
+    
 	lazy var m_imageManager: PHCachingImageManager = PHCachingImageManager()
 	
 	/// 小图大小
@@ -146,21 +166,21 @@ extension MyPhotoGridVC {
 
 extension MyPhotoGridVC {
 	func enableItems() {
-		let enable = self.m_selectedAssets.count > 0
+		let enable = self.m_selectedItems.count > 0
 
 		self.m_preview.enabled = enable
 		self.m_done.enabled = enable
 	}
 	
 	func showSelectLabel() {
-		self.m_selectedBgView.hidden = self.m_selectedAssets.count <= 0
+		self.m_selectedBgView.hidden = self.m_selectedItems.count <= 0
 		self.m_selectedBgView.transform = CGAffineTransformMakeScale(0.1, 0.1)
 		UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
 			self.m_selectedBgView.transform = CGAffineTransformIdentity
 			}, completion: nil)
 		
-		self.m_selectedLabel.text = "\(self.m_selectedAssets.count)"
-		self.m_selectedLabel.hidden = self.m_selectedAssets.count <= 0
+		self.m_selectedLabel.text = "\(self.m_selectedItems.count)"
+		self.m_selectedLabel.hidden = self.m_selectedItems.count <= 0
 	}
 	
 	func cancel() {
@@ -168,7 +188,19 @@ extension MyPhotoGridVC {
 	}
 	
 	@IBAction func previewClick(sender: AnyObject) {
-		
+        let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyPhotoPreviewVC") as! MyPhotoPreviewVC
+        
+        var assets: [PHAsset] = []
+        for item in self.m_selectedItems {
+            assets.append(item.m_asset)
+        }
+        vc.m_assets = assets
+        vc.m_allAssets = self.m_allAssets
+        vc.m_firstIndexPath = NSIndexPath.init(forItem: 0, inSection: 0)
+        vc.m_selectedIndex = self.m_selectedIndex
+        vc.m_delegate = self
+        
+        self.navigationController?.pushViewController(vc, animated: true)
 	}
 	
 	@IBAction func doneClick(sender: AnyObject) {
@@ -176,25 +208,47 @@ extension MyPhotoGridVC {
 	}
 }
 
-extension MyPhotoGridVC: MyPhotoGridCellDelegate {
+extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
 	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell, selected: Bool) {
+        let selectedItem = MySelectedItem.init(asset: cell.m_data.m_asset, index: cell.m_data.m_index)
+        
 		if selected {
-			self.m_selectedAssets.append(cell.m_data)
+			self.m_selectedItems.append(selectedItem)
 		} else {
-		    let index = self.m_selectedAssets.indexOf(cell.m_data)
+		    let index = self.m_selectedItems.indexOf(selectedItem)
 			
 			if (index != nil) {
-				self.m_selectedAssets.removeAtIndex(index!)
+				self.m_selectedItems.removeAtIndex(index!)
 			}
 		}
-		
-		self.m_selectedIndex.removeAll()
-		for asset in self.m_selectedAssets {
-			self.m_selectedIndex.append(asset.m_index)
-		}
-
-		self.updateToolBarView()
+        
+        self.updateAfterChange()
 	}
+    
+    func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selected: [NSIndexPath]) {
+        self.m_selectedItems.removeAll()
+        
+        for indexPath in selected {
+            let selectedItem = MySelectedItem.init(asset: self.m_allAssets[indexPath.item], index: indexPath)
+            self.m_selectedItems.append(selectedItem)
+        }
+        
+        self.m_collectionView.reloadData()
+        self.updateAfterChange()
+    }
+    
+    func updateAfterChange() {
+        self.m_selectedItems.sortInPlace { (item1, item2) -> Bool in
+            return item1.m_index.item < item2.m_index.item
+        }
+        
+        self.m_selectedIndex.removeAll()
+        for asset in self.m_selectedItems {
+            self.m_selectedIndex.append(asset.m_index)
+        }
+        
+        self.updateToolBarView()
+    }
 }
 
 extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -207,7 +261,7 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 		
 		cell.m_delegate = self
 		
-		let asset = self.m_fetchResult[indexPath.row] as! PHAsset
+		let asset = self.m_fetchResult[indexPath.item] as! PHAsset
 		
 		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
 			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
@@ -220,8 +274,12 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 		let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyPhotoPreviewVC") as! MyPhotoPreviewVC
-		vc.m_fetchResult = self.m_fetchResult
-		vc.m_curIndexPath = indexPath
+        
+		vc.m_assets = self.m_allAssets
+        vc.m_allAssets = self.m_allAssets
+		vc.m_firstIndexPath = indexPath
+        vc.m_selectedIndex = self.m_selectedIndex
+        vc.m_delegate = self
 		
 		self.navigationController?.pushViewController(vc, animated: true)
 	}

@@ -10,15 +10,50 @@ import Foundation
 import UIKit
 import Photos
 
+protocol MyPhotoPreviewVCDelegate: NSObjectProtocol {
+    func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selected: [NSIndexPath])
+}
+
 class MyPhotoPreviewVC: UIViewController {
 	
 	@IBOutlet weak var m_topView: UIView!
 	@IBOutlet weak var m_collectionView: UICollectionView!
-	
-	var m_fetchResult: PHFetchResult!
-	var m_curIndexPath: NSIndexPath!
-		
+    @IBOutlet weak var m_selectButton: UIButton!
+    @IBOutlet weak var m_doneButton: UIButton!
+    @IBOutlet weak var m_bottomView: UIView!
+    
+    
+    let m_selectedLabelWidth: CGFloat = 30
+    
+    lazy var m_selectedBgView: UIView = {
+        var tempBgView = UIView.init(frame: CGRectMake(kScreenWidth-84, (44-self.m_selectedLabelWidth)/2, self.m_selectedLabelWidth, self.m_selectedLabelWidth))
+        tempBgView.backgroundColor = UIColor.blackColor()
+        tempBgView.layer.cornerRadius = 15
+        tempBgView.layer.masksToBounds = true
+        
+        return tempBgView
+    }()
+    
+    lazy var m_selectedLabel: UILabel = {
+        var tempLabel = UILabel.init(frame: CGRectMake(kScreenWidth-84, (44-self.m_selectedLabelWidth)/2, self.m_selectedLabelWidth, self.m_selectedLabelWidth))
+        tempLabel.font = UIFont(name: "PingFang-SC-Regular", size: 15)
+        tempLabel.textColor = UIColor.whiteColor()
+        tempLabel.textAlignment = .Center
+        tempLabel.backgroundColor = UIColor.clearColor()
+        
+        return tempLabel
+    }()
+    
+	var m_assets: [PHAsset]! = []
+    var m_allAssets: [PHAsset]! = []
+	var m_firstIndexPath: NSIndexPath! = NSIndexPath.init(forItem: 0, inSection: 0)
+    var m_selectedIndex: [NSIndexPath]! = []
+    
+    var m_curIndexPath: NSIndexPath!
+    
 	lazy var m_imageManager: PHCachingImageManager = PHCachingImageManager()
+    
+    weak var m_delegate: MyPhotoPreviewVCDelegate?
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
@@ -29,17 +64,13 @@ class MyPhotoPreviewVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 	
-		self.m_collectionView.backgroundColor = UIColor.blackColor()
-		self.m_collectionView.registerClass(MyPhotoPreviewCell.self, forCellWithReuseIdentifier: MyPhotoPreviewCell.getCellIdentifier())
+        self.initSubViews()
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
 		self.navigationController?.setNavigationBarHidden(true, animated: false)
-		
-//		self.m_collectionView.layoutIfNeeded()
-//		self.m_collectionView.scrollToItemAtIndexPath(NSIndexPath.init(forItem: self.m_curIndexPath.row, inSection: 0), atScrollPosition: .Left, animated: false)
 	}
 	
 	override func viewWillDisappear(animated: Bool) {
@@ -54,14 +85,63 @@ class MyPhotoPreviewVC: UIViewController {
 }
 
 extension MyPhotoPreviewVC {
+    func initSubViews() {
+        self.m_collectionView.backgroundColor = UIColor.blackColor()
+        self.m_collectionView.registerClass(MyPhotoPreviewCell.self, forCellWithReuseIdentifier: MyPhotoPreviewCell.getCellIdentifier())
+        
+        self.m_collectionView.layoutIfNeeded()
+        self.m_collectionView.scrollToItemAtIndexPath(NSIndexPath.init(forItem: self.m_firstIndexPath.item, inSection: 0), atScrollPosition: .Left, animated: true)
+        
+        self.m_bottomView.addSubview(self.m_selectedBgView)
+        self.m_bottomView.addSubview(self.m_selectedLabel)
+        
+        self.updateBottomView()
+    }
+    
+    func updateBottomView() {
+        self.showSelectLabel()
+        self.m_doneButton.enabled = self.m_selectedIndex.count > 0
+    }
+    
+    func showSelectLabel() {
+        self.m_selectedBgView.hidden = self.m_selectedIndex.count <= 0
+        self.m_selectedBgView.transform = CGAffineTransformMakeScale(0.1, 0.1)
+        UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
+            self.m_selectedBgView.transform = CGAffineTransformIdentity
+            }, completion: nil)
+        
+        self.m_selectedLabel.text = "\(self.m_selectedIndex.count)"
+        self.m_selectedLabel.hidden = self.m_selectedIndex.count <= 0
+    }
+}
+
+extension MyPhotoPreviewVC {
 	
 	@IBAction func backClick(sender: AnyObject) {
+        self.m_delegate?.afterChangeSelectedItem(self, selected: self.m_selectedIndex)
+        
 		self.navigationController?.popViewControllerAnimated(true)
 	}
 	
 	@IBAction func selectClick(sender: AnyObject) {
+        self.m_selectButton.selected = !self.m_selectButton.selected
+        
+        if self.m_selectButton.selected {
+            self.m_selectedIndex.append(self.m_curIndexPath)
+        } else {
+            let index = self.m_selectedIndex.indexOf(self.m_curIndexPath)
+            
+            if (index != nil) {
+                self.m_selectedIndex.removeAtIndex(index!)
+            }
+        }
+        
+        self.updateBottomView()
 	}
-	
+    
+    @IBAction func m_doneClick(sender: AnyObject) {
+    }
+    
 }
 
 extension MyPhotoPreviewVC: UIScrollViewDelegate {
@@ -70,9 +150,8 @@ extension MyPhotoPreviewVC: UIScrollViewDelegate {
 		if scrollView == self.m_collectionView {
 			targetContentOffset.memory = scrollView.contentOffset
 			
-			let flowLayout = self.m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-			let pageWidth = CGRectGetWidth(scrollView.frame) + flowLayout.minimumLineSpacing
-			
+			let pageWidth = CGRectGetWidth(scrollView.frame) + 10
+            			
 			var assistanceOffset: CGFloat = pageWidth / 2.0
 			
 			if velocity.x < 0 {
@@ -96,25 +175,33 @@ extension MyPhotoPreviewVC: UIScrollViewDelegate {
 extension MyPhotoPreviewVC: MyPhotoPreviewCellDelegate {
 	func afterSingleTap(cell: MyPhotoPreviewCell) {
 		self.m_topView.hidden = !self.m_topView.hidden
+        self.m_bottomView.hidden = !self.m_bottomView.hidden
 	}
 }
 
 extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return self.m_fetchResult.count
+		return self.m_assets.count
 	}
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        
 		let cell = collectionView.dequeueReusableCellWithReuseIdentifier(MyPhotoPreviewCell.getCellIdentifier(), forIndexPath: indexPath) as! MyPhotoPreviewCell
 		
 		cell.m_delegate = self
+        cell.m_scrollView.hidden = true
 		
-		let asset = self.m_fetchResult[indexPath.row] as! PHAsset
-		
+		let asset = self.m_assets[indexPath.item]
+        
+        self.m_curIndexPath = NSIndexPath.init(forItem: self.m_allAssets.indexOf(asset)!, inSection: 0)
+        self.m_selectButton.selected = self.m_selectedIndex.contains(self.m_curIndexPath)
+
 		self.m_imageManager.requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
 			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
+            cell.imageResize()
+            cell.m_scrollView.hidden = false
 		}
-		
+        
 		return cell
 	}
 	

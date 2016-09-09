@@ -14,6 +14,7 @@ protocol MyPhotoPreviewCellDelegate: NSObjectProtocol {
 
 class MyPhotoPreviewCell: UICollectionViewCell {
 	
+    @IBOutlet weak var m_actIndicator: UIActivityIndicatorView!
 	lazy var m_scrollView: UIScrollView = {
 		var tempScrollView = UIScrollView(frame: self.contentView.bounds)
 		
@@ -40,11 +41,12 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 	
 	weak var m_delegate: MyPhotoPreviewCellDelegate?
 	
-	var m_curGes: UIGestureRecognizer!
-	var m_originGesLoc: CGPoint!
-	var m_originContentSize: CGSize!
-	var m_originImage: CGPoint!
-	
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        self.m_actIndicator.hidden = false
+    }
+    
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		
@@ -77,7 +79,7 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		self.m_data = data
 		
 		self.m_imageView.image = data.m_img
-	}
+    }
 }
 
 extension MyPhotoPreviewCell {
@@ -89,41 +91,32 @@ extension MyPhotoPreviewCell {
 		
 		let imgSize = img.size
 		let widthRatio = imgSize.width / kScreenWidth
-		let heightRatio = imgSize.height / kScreenHeight
-		let ratio = max(widthRatio, heightRatio)
 		
-		let newSize = CGSizeMake(imgSize.width / ratio, imgSize.height / ratio)
+		let newSize = CGSizeMake(imgSize.width / widthRatio, imgSize.height / widthRatio)
 		self.m_imageView.frame.size = newSize
-		self.m_imageView.center = self.m_scrollView.center
-	}
-	
-	func calContentOffsetAfterZoom(scrollView: UIScrollView, contentWidthDelta: CGFloat, contentHeightDelta: CGFloat) {
-		var xOffset: CGFloat = 0.0
-		var yOffset: CGFloat = 0.0
-		
-		if (contentWidthDelta > 0 || contentHeightDelta > 0) {
-			let gesLoc = self.m_curGes.locationInView(self.m_curGes.view)
-			let gesLocInImage = CGPointMake(self.m_originGesLoc.x - self.m_originImage.x, self.m_originGesLoc.y - self.m_originImage.y)
-			
-			if contentWidthDelta <= 0 || (gesLocInImage.x <= self.m_originContentSize.width/3) {
-				xOffset = 0
-			} else if (gesLocInImage.x >= self.m_originContentSize.width*2/3) {
-				xOffset = scrollView.contentSize.width - scrollView.frame.size.width
-			} else {
-				xOffset = abs(gesLoc.x - self.m_originGesLoc.x)
-			}
-			
-			if contentHeightDelta <= 0 || (gesLocInImage.y <= self.m_originContentSize.height/3) {
-				yOffset = 0
-			} else if (gesLocInImage.y >= self.m_originContentSize.height*2/3) {
-				yOffset = scrollView.contentSize.height - scrollView.frame.size.height
-			} else {
-				yOffset = abs(gesLoc.y - self.m_originGesLoc.y)
-			}
-		}
-		
-		scrollView.contentOffset = CGPointMake(xOffset, yOffset)
-	}
+        
+        if (newSize.height <= self.m_scrollView.frame.size.height) {
+            self.m_imageView.center = self.m_scrollView.center
+        } else {
+            self.m_imageView.frame.origin = CGPointZero
+        }
+        
+        self.m_scrollView.contentOffset = CGPointZero
+    }
+    
+    // 把从scrollView里截取的矩形区域缩放到整个scrollView当前可视的frame里面。获取所要放大的内容的rect，以点击点为中心。因为放大scale倍，所以截取内容宽高为scrollview的1/scale。
+    func zoomRectForScale(scale: CGFloat, center: CGPoint) -> CGRect {
+        var zoomRect: CGRect = CGRectZero
+        
+        //大小
+        zoomRect.size.height = self.m_scrollView.frame.size.height/scale;
+        zoomRect.size.width = self.m_scrollView.frame.size.width/scale;
+        //原点
+        zoomRect.origin.x = center.x - zoomRect.size.width/2;
+        zoomRect.origin.y = center.y - zoomRect.size.height/2;
+        
+        return zoomRect;
+    }
 }
 
 extension MyPhotoPreviewCell {
@@ -132,11 +125,6 @@ extension MyPhotoPreviewCell {
 	}
 	
 	func doubleTap(ges: UITapGestureRecognizer) {
-		self.m_curGes = ges
-		self.m_originGesLoc = ges.locationInView(ges.view)
-		self.m_originContentSize = self.m_scrollView.contentSize
-		self.m_originImage = self.m_imageView.frame.origin
-		
 		let newScale: CGFloat
 		
 		if self.m_scrollView.zoomScale == 1 {
@@ -145,9 +133,8 @@ extension MyPhotoPreviewCell {
 			newScale = 1
 		}
 		
-		UIView.animateWithDuration(0.5, animations: {
-			self.m_scrollView.zoomScale = newScale
-		})
+        let newRect = self.zoomRectForScale(newScale, center: ges.locationInView(self.m_imageView))
+        self.m_scrollView.zoomToRect(newRect, animated: true)
 	}
 }
 
@@ -161,14 +148,12 @@ extension MyPhotoPreviewCell: UIScrollViewDelegate {
 		var ycenter = scrollView.center.y
 		
 		// ScrollView中内容的大小和ScrollView本身的大小，哪个大取哪个的中心
-		let contentWidthDelta: CGFloat = scrollView.contentSize.width - scrollView.frame.size.width
-		let contentHeightDelta: CGFloat = scrollView.contentSize.height - scrollView.frame.size.height
+		let contentWidthLarger: Bool = scrollView.contentSize.width > scrollView.frame.size.width
+		let contentHeightLarger: Bool = scrollView.contentSize.height > scrollView.frame.size.height
 		
-		xcenter = contentWidthDelta > 0 ? scrollView.contentSize.width/2 : xcenter
-		ycenter = contentHeightDelta > 0 ? scrollView.contentSize.height/2 : ycenter
+		xcenter = contentWidthLarger ? scrollView.contentSize.width/2 : xcenter
+		ycenter = contentHeightLarger ? scrollView.contentSize.height/2 : ycenter
 		self.m_imageView.center = CGPointMake(xcenter, ycenter)
-	
-		self.calContentOffsetAfterZoom(scrollView, contentWidthDelta: contentWidthDelta, contentHeightDelta: contentHeightDelta)
 	}
 	
 }
