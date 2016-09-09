@@ -16,10 +16,12 @@ let kScreenHeight = CGRectGetHeight(UIScreen.mainScreen().bounds)
 class MyPhotoItem: NSObject {
 	var m_img: UIImage!
 	var m_asset: PHAsset!
+	var m_index: NSIndexPath!
 	
-	init(image: UIImage, asset: PHAsset) {
+	init(image: UIImage, asset: PHAsset, index: NSIndexPath) {
 		self.m_img = image
 		self.m_asset = asset
+		self.m_index = index
 	}
 }
 
@@ -178,18 +180,17 @@ extension MyPhotoGridVC: MyPhotoGridCellDelegate {
 	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell, selected: Bool) {
 		if selected {
 			self.m_selectedAssets.append(cell.m_data)
-			self.m_selectedIndex.append(cell.m_indexPath)
 		} else {
 		    let index = self.m_selectedAssets.indexOf(cell.m_data)
-			let indexPathIdx = self.m_selectedIndex.indexOf(cell.m_indexPath)
 			
 			if (index != nil) {
 				self.m_selectedAssets.removeAtIndex(index!)
 			}
-			
-			if (indexPathIdx != nil) {
-				self.m_selectedIndex.removeAtIndex(indexPathIdx!)
-			}
+		}
+		
+		self.m_selectedIndex.removeAll()
+		for asset in self.m_selectedAssets {
+			self.m_selectedIndex.append(asset.m_index)
 		}
 
 		self.updateToolBarView()
@@ -209,7 +210,7 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 		let asset = self.m_fetchResult[indexPath.row] as! PHAsset
 		
 		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
-			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset), indexPath: indexPath)
+			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
 		}
 		
 		cell.m_selectButton.selected = self.m_selectedIndex.contains(indexPath)
@@ -218,7 +219,11 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+		let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyPhotoPreviewVC") as! MyPhotoPreviewVC
+		vc.m_fetchResult = self.m_fetchResult
+		vc.m_curIndexPath = indexPath
 		
+		self.navigationController?.pushViewController(vc, animated: true)
 	}
 	
 	func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {

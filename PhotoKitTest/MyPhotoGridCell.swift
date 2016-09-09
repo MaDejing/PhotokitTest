@@ -20,7 +20,6 @@ class MyPhotoGridCell: UICollectionViewCell {
 	weak var m_delegate: MyPhotoGridCellDelegate?
 	
 	var m_data: MyPhotoItem!
-	var m_indexPath: NSIndexPath!
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
@@ -30,11 +29,10 @@ class MyPhotoGridCell: UICollectionViewCell {
 		return "MyPhotoGridCell"
 	}
 	
-	func updateCellWithData(data: MyPhotoItem, indexPath: NSIndexPath) {
+	func updateCellWithData(data: MyPhotoItem) {
 		self.m_data = data
 		
 		self.m_imageView.image = data.m_img
-		self.m_indexPath = indexPath
 	}
 	
 	@IBAction func photoSelect(sender: AnyObject) {
