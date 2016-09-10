@@ -77,7 +77,7 @@ class MyPhotoPreviewVC: UIViewController {
 		super.viewWillAppear(animated)
         
         self.m_collectionView.layoutIfNeeded()
-        self.m_collectionView.scrollToItemAtIndexPath(NSIndexPath.init(forItem: self.m_firstIndexPath.item, inSection: 0), atScrollPosition: .Left, animated: true)
+        self.m_collectionView.scrollToItemAtIndexPath(NSIndexPath.init(forItem: self.m_firstIndexPath.item, inSection: 0), atScrollPosition: .Left, animated: false)
 		
 		self.navigationController?.setNavigationBarHidden(true, animated: false)
 	}
@@ -132,6 +132,15 @@ extension MyPhotoPreviewVC {
         self.m_selectedLabel.text = "\(self.m_selectedIndex.count)"
         self.m_selectedLabel.hidden = self.m_selectedIndex.count <= 0
     }
+    
+    func calImageSize(asset: PHAsset, scale: CGFloat) -> CGSize {
+        // 计算图片大小
+        var imageSize: CGSize = CGSizeMake(CGFloat(asset.pixelWidth), CGFloat(asset.pixelHeight))
+        let aspectRatio: CGFloat = CGFloat(asset.pixelWidth) / CGFloat(asset.pixelHeight)
+        imageSize = CGSizeMake(kScreenWidth*scale, CGFloat(asset.pixelHeight)/aspectRatio*scale);
+        
+        return imageSize
+    }
 }
 
 extension MyPhotoPreviewVC {
@@ -169,7 +178,7 @@ extension MyPhotoPreviewVC: UIScrollViewDelegate {
 		if scrollView == self.m_collectionView {
 			targetContentOffset.memory = scrollView.contentOffset
 			
-			let pageWidth = CGRectGetWidth(scrollView.frame) + m_minLineSpace
+			let pageWidth = CGRectGetWidth(scrollView.frame) + self.m_minLineSpace
             			
 			var assistanceOffset: CGFloat = pageWidth / 2.0
 			
@@ -217,13 +226,7 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
         self.m_curIndexPath = NSIndexPath.init(forItem: self.m_allAssets.indexOf(asset)!, inSection: 0)
         self.m_selectButton.selected = self.m_selectedIndex.contains(self.m_curIndexPath)
 
-        // 计算图片大小
-        let imageSize: CGSize
-        let aspectRatio: CGFloat = CGFloat(asset.pixelWidth) / CGFloat(asset.pixelHeight)
-        let scale: CGFloat = 1.0
-        imageSize = CGSizeMake(kScreenWidth*scale, CGFloat(asset.pixelHeight)/aspectRatio*scale);
-
-		self.m_imageManager.requestImageForAsset(asset, targetSize: imageSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
+        self.m_imageManager.requestImageForAsset(asset, targetSize: self.calImageSize(asset, scale: 1.0), contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
 			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
 		}
         

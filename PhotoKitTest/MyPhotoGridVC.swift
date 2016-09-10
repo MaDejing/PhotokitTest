@@ -101,14 +101,12 @@ class MyPhotoGridVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
+        self.initData()
 		self.initSubViews()
     }
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-        
-        self.initData()
-        self.scrollToBottom()
     }
 	
 	override func didReceiveMemoryWarning() {
@@ -141,6 +139,7 @@ extension MyPhotoGridVC {
 		self.navigationItem.rightBarButtonItem = rightBarItem
         
         self.initWithCollectionView()
+        self.scrollToBottom()
 						
 		self.m_toolBar.addSubview(self.m_selectedBgView)
 		self.m_toolBar.addSubview(self.m_selectedLabel)
