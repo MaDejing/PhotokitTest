@@ -22,6 +22,13 @@ class MyPhotoPreviewVC: UIViewController {
     @IBOutlet weak var m_doneButton: UIButton!
     @IBOutlet weak var m_bottomView: UIView!
     
+    var m_assetGridThumbnailSize: CGSize = CGSizeZero
+    let m_minLineSpace: CGFloat = 10.0
+    let m_minItemSpace: CGFloat = 0.0
+    let m_collectionTop: CGFloat = 0
+    let m_collectionLeft: CGFloat = 0
+    let m_collectionBottom: CGFloat = 0
+    let m_collectionRight: CGFloat = 0
     
     let m_selectedLabelWidth: CGFloat = 30
     
@@ -64,6 +71,7 @@ class MyPhotoPreviewVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 	
+        self.initData()
         self.initSubViews()
 	}
 	
@@ -85,10 +93,17 @@ class MyPhotoPreviewVC: UIViewController {
 }
 
 extension MyPhotoPreviewVC {
-    func initSubViews() {
-        self.m_collectionView.backgroundColor = UIColor.blackColor()
-        self.m_collectionView.registerClass(MyPhotoPreviewCell.self, forCellWithReuseIdentifier: MyPhotoPreviewCell.getCellIdentifier())
+    func initData() {
+        self.initWithCollectionView()
+
+        // 计算出小图大小 （ 为targetSize做准备 ）
+        let scale: CGFloat = 1.0
+        let cellSize = (self.m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
         
+        self.m_assetGridThumbnailSize = CGSizeMake(cellSize.width*scale, cellSize.height*scale)
+    }
+    
+    func initSubViews() {
         self.m_collectionView.layoutIfNeeded()
         self.m_collectionView.scrollToItemAtIndexPath(NSIndexPath.init(forItem: self.m_firstIndexPath.item, inSection: 0), atScrollPosition: .Left, animated: true)
         
@@ -96,6 +111,19 @@ extension MyPhotoPreviewVC {
         self.m_bottomView.addSubview(self.m_selectedLabel)
         
         self.updateBottomView()
+    }
+    
+    func initWithCollectionView() {
+        self.m_collectionView.backgroundColor = UIColor.blackColor()
+        self.m_collectionView.registerClass(MyPhotoPreviewCell.self, forCellWithReuseIdentifier: MyPhotoPreviewCell.getCellIdentifier())
+        
+        let collectionViewFlowLayout = UICollectionViewFlowLayout()
+        collectionViewFlowLayout.minimumLineSpacing = self.m_minLineSpace
+        collectionViewFlowLayout.minimumInteritemSpacing = self.m_minItemSpace
+        collectionViewFlowLayout.sectionInset = UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
+        collectionViewFlowLayout.itemSize = CGSizeMake(kScreenWidth, kScreenHeight)
+        collectionViewFlowLayout.scrollDirection = .Horizontal
+        self.m_collectionView.collectionViewLayout = collectionViewFlowLayout
     }
     
     func updateBottomView() {
@@ -150,7 +178,7 @@ extension MyPhotoPreviewVC: UIScrollViewDelegate {
 		if scrollView == self.m_collectionView {
 			targetContentOffset.memory = scrollView.contentOffset
 			
-			let pageWidth = CGRectGetWidth(scrollView.frame) + 10
+			let pageWidth = CGRectGetWidth(scrollView.frame) + m_minLineSpace
             			
 			var assistanceOffset: CGFloat = pageWidth / 2.0
 			
@@ -189,17 +217,14 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
 		let cell = collectionView.dequeueReusableCellWithReuseIdentifier(MyPhotoPreviewCell.getCellIdentifier(), forIndexPath: indexPath) as! MyPhotoPreviewCell
 		
 		cell.m_delegate = self
-        cell.m_scrollView.hidden = true
 		
 		let asset = self.m_assets[indexPath.item]
         
         self.m_curIndexPath = NSIndexPath.init(forItem: self.m_allAssets.indexOf(asset)!, inSection: 0)
         self.m_selectButton.selected = self.m_selectedIndex.contains(self.m_curIndexPath)
 
-		self.m_imageManager.requestImageForAsset(asset, targetSize: PHImageManagerMaximumSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
+		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
 			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
-            cell.imageResize()
-            cell.m_scrollView.hidden = false
 		}
         
 		return cell
@@ -210,20 +235,20 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
 			cell.imageResize()
 		}
 	}
-	
-	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-		return self.m_collectionView.frame.size
-	}
-	
-	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
-		return 10.0
-	}
-	
-	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
-		return 0.0
-	}
-	
-	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-		return UIEdgeInsetsMake(0, 0, 0, 0)
-	}
+//	
+//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+//		return self.m_collectionView.frame.size
+//	}
+//	
+//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
+//		return self.m_minLineSpace
+//	}
+//	
+//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
+//		return self.m_minItemSpace
+//	}
+//	
+//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
+//		return UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
+//	}
 }

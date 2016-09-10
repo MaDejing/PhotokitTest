@@ -99,14 +99,13 @@ class MyPhotoGridVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		self.initData()
+        self.initData()
 		self.initSubViews()
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		
-	}
+    }
 	
 	override func didReceiveMemoryWarning() {
 		super.didReceiveMemoryWarning()
@@ -126,19 +125,19 @@ class MyPhotoGridVC: UIViewController {
 
 extension MyPhotoGridVC {
 	func initData() {
+        self.initWithCollectionView()
+
 		// 计算出小图大小 （ 为targetSize做准备 ）
 		let scale: CGFloat = 2.0
 		let cellSize = (self.m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
-		self.m_assetGridThumbnailSize = CGSizeMake(cellSize.width*scale, cellSize.height*scale)
+        
+        self.m_assetGridThumbnailSize = CGSizeMake(cellSize.width*scale, cellSize.height*scale)
 	}
 	
 	func initSubViews() {
 		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.Plain, target: self, action:#selector(MyPhotoGridVC.cancel) )
 		self.navigationItem.rightBarButtonItem = rightBarItem
-		
-		self.m_collectionView.backgroundColor = UIColor.whiteColor()
-		self.m_collectionView.allowsMultipleSelection = true
-		
+				
 		self.scrollToBottom()
 		
 		self.m_toolBar.addSubview(self.m_selectedBgView)
@@ -146,6 +145,19 @@ extension MyPhotoGridVC {
 		
 		self.updateToolBarView()
 	}
+    
+    func initWithCollectionView() {
+        self.m_collectionView.backgroundColor = UIColor.whiteColor()
+        self.m_collectionView.allowsMultipleSelection = true
+        
+        let collectionViewFlowLayout = UICollectionViewFlowLayout()
+        collectionViewFlowLayout.minimumLineSpacing = self.m_minLineSpace
+        collectionViewFlowLayout.minimumInteritemSpacing = self.m_minItemSpace
+        collectionViewFlowLayout.sectionInset = UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
+        let width = (kScreenWidth - self.m_minItemSpace*3 - self.m_collectionLeft - self.m_collectionRight) / 4
+        collectionViewFlowLayout.itemSize = CGSizeMake(width, width)
+        self.m_collectionView.collectionViewLayout = collectionViewFlowLayout
+    }
 	
 	func scrollToBottom() {
 		self.m_collectionView.layoutIfNeeded()
@@ -288,20 +300,20 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 		
 	}
 	
-	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-		return UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
-	}
-	
-	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-		let width = (kScreenWidth-self.m_minItemSpace*3-self.m_collectionLeft-self.m_collectionRight) / 4
-		return CGSizeMake(width, width)
-	}
-	
-	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
-		return self.m_minLineSpace
-	}
-	
-	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
-		return self.m_minItemSpace
-	}
+//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
+//		return UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
+//	}
+//	
+//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+//		let width = (kScreenWidth-self.m_minItemSpace*3-self.m_collectionLeft-self.m_collectionRight) / 4
+//		return CGSizeMake(width, width)
+//	}
+//	
+//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
+//		return self.m_minLineSpace
+//	}
+//	
+//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
+//		return self.m_minItemSpace
+//	}
 }

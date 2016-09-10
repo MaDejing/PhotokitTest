@@ -400,6 +400,13 @@
                             <constraint firstItem="R9b-HW-A3c" firstAttribute="leading" secondItem="BCM-iF-DgJ" secondAttribute="leading" id="mDf-Ma-7nF"/>
                             <constraint firstItem="R9b-HW-A3c" firstAttribute="leading" secondItem="BCM-iF-DgJ" secondAttribute="leading" id="pcj-HY-tC7"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="5PQ-ZU-9Id"/>
+                                <exclude reference="9eO-Pr-K3Z"/>
+                                <exclude reference="pcj-HY-tC7"/>
+                            </mask>
+                        </variation>
                     </view>
                     <toolbarItems/>
                     <connections>
