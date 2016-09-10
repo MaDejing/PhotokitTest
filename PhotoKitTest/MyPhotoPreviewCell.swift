@@ -14,7 +14,16 @@ protocol MyPhotoPreviewCellDelegate: NSObjectProtocol {
 
 class MyPhotoPreviewCell: UICollectionViewCell {
 	
-    @IBOutlet weak var m_actIndicator: UIActivityIndicatorView!
+    lazy var m_actIndicator: UIActivityIndicatorView = {
+        var tempAct = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        
+        tempAct.center = self.center
+        tempAct.hidesWhenStopped = true
+        tempAct.startAnimating()
+        
+        return tempAct
+    }()
+    
 	lazy var m_scrollView: UIScrollView = {
 		var tempScrollView = UIScrollView(frame: self.contentView.bounds)
 		
@@ -40,11 +49,10 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 	var m_data: MyPhotoItem!
 	
 	weak var m_delegate: MyPhotoPreviewCellDelegate?
-	
+    
     override func awakeFromNib() {
-        super.awakeFromNib()
-        
         self.m_actIndicator.hidden = false
+        self.m_actIndicator.startAnimating()
     }
     
 	override init(frame: CGRect) {
@@ -65,7 +73,9 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		
 		self.m_scrollView.addSubview(self.m_imageView)
 		self.contentView.addSubview(self.m_scrollView)
-	}
+        
+        self.contentView.addSubview(self.m_actIndicator)
+    }
 	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
@@ -81,6 +91,10 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		self.m_imageView.image = data.m_img
         
         self.imageResize()
+        
+        self.m_scrollView.hidden = false
+        self.m_actIndicator.stopAnimating()
+        self.bringSubviewToFront(self.m_scrollView)
     }
 }
 

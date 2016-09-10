@@ -89,8 +89,10 @@ class MyPhotoGridVC: UIViewController {
 	let m_collectionLeft: CGFloat = 5
 	let m_collectionBottom: CGFloat = 0
 	let m_collectionRight: CGFloat = 5
-	
-	override func awakeFromNib() {
+    
+    var m_imageRequestID: PHImageRequestID! = 0
+    
+    override func awakeFromNib() {
 		super.awakeFromNib()
 		
 		self.m_imageManager.stopCachingImagesForAllAssets()
@@ -100,14 +102,13 @@ class MyPhotoGridVC: UIViewController {
 		super.viewDidLoad()
 		
 		self.initSubViews()
-	}
+    }
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
         
         self.initData()
         self.scrollToBottom()
-
     }
 	
 	override func didReceiveMemoryWarning() {
@@ -162,7 +163,6 @@ extension MyPhotoGridVC {
 	
 	func scrollToBottom() {
 		self.m_collectionView.layoutIfNeeded()
-		self.m_collectionView.reloadData()
 		
 		let contentSize = self.m_collectionView.contentSize
 		let frameSize = self.m_collectionView.frame.size
@@ -275,11 +275,16 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 		cell.m_delegate = self
 		
 		let asset = self.m_fetchResult[indexPath.item] as! PHAsset
-		
+        
 		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
 			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
 		}
-		
+        
+//        if (requestID != 0) && (self.m_imageRequestID != 0) && (requestID != self.m_imageRequestID) {
+//            PHImageManager.defaultManager().cancelImageRequest(self.m_imageRequestID)
+//        }
+//        self.m_imageRequestID = requestID
+        
 		cell.m_selectButton.selected = self.m_selectedIndex.contains(indexPath)
 
 		return cell

@@ -22,7 +22,6 @@ class MyPhotoPreviewVC: UIViewController {
     @IBOutlet weak var m_doneButton: UIButton!
     @IBOutlet weak var m_bottomView: UIView!
     
-//    var m_assetGridThumbnailSize: CGSize = CGSizeZero
     let m_minLineSpace: CGFloat = 10.0
     let m_minItemSpace: CGFloat = 0.0
     let m_collectionTop: CGFloat = 0
@@ -72,7 +71,7 @@ class MyPhotoPreviewVC: UIViewController {
 		super.viewDidLoad()
 	
         self.initSubViews()
-	}
+    }
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
@@ -95,15 +94,7 @@ class MyPhotoPreviewVC: UIViewController {
 }
 
 extension MyPhotoPreviewVC {
-//    func initData() {
-//
-//        // 计算出小图大小 （ 为targetSize做准备 ）
-//        let scale: CGFloat = 1.0
-//        let cellSize = (self.m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
-//        
-//        self.m_assetGridThumbnailSize = CGSizeMake(cellSize.width*scale, cellSize.height*scale)
-//    }
-//    
+    
     func initSubViews() {
         self.initWithCollectionView()
         
@@ -217,13 +208,16 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
 		let cell = collectionView.dequeueReusableCellWithReuseIdentifier(MyPhotoPreviewCell.getCellIdentifier(), forIndexPath: indexPath) as! MyPhotoPreviewCell
 		
 		cell.m_delegate = self
-		
+        cell.m_scrollView.hidden = true
+        cell.m_actIndicator.startAnimating()
+        cell.bringSubviewToFront(cell.m_actIndicator)
+        
 		let asset = self.m_assets[indexPath.item]
         
         self.m_curIndexPath = NSIndexPath.init(forItem: self.m_allAssets.indexOf(asset)!, inSection: 0)
         self.m_selectButton.selected = self.m_selectedIndex.contains(self.m_curIndexPath)
 
-        
+        // 计算图片大小
         let imageSize: CGSize
         let aspectRatio: CGFloat = CGFloat(asset.pixelWidth) / CGFloat(asset.pixelHeight)
         let scale: CGFloat = 1.0

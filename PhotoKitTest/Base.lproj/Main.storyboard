@@ -59,7 +59,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="100.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="XAg-Tq-DXY">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="XAg-Tq-DXY">
                                                     <rect key="frame" x="0.0" y="11" width="80" height="80"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="80" id="I07-7P-MD7"/>
@@ -276,20 +276,8 @@
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="599" height="602"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="mSG-2z-H0N">
-                                                    <rect key="frame" x="289" y="291" width="20" height="20"/>
-                                                </activityIndicatorView>
-                                            </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
-                                        <constraints>
-                                            <constraint firstItem="mSG-2z-H0N" firstAttribute="centerY" secondItem="iQt-Yn-JPz" secondAttribute="centerY" id="1Yb-X3-qI7"/>
-                                            <constraint firstItem="mSG-2z-H0N" firstAttribute="centerX" secondItem="iQt-Yn-JPz" secondAttribute="centerX" id="bFo-4g-5Qb"/>
-                                        </constraints>
-                                        <connections>
-                                            <outlet property="m_actIndicator" destination="mSG-2z-H0N" id="9FT-AN-QSE"/>
-                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
