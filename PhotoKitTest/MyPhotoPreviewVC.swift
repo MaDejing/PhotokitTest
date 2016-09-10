@@ -22,7 +22,7 @@ class MyPhotoPreviewVC: UIViewController {
     @IBOutlet weak var m_doneButton: UIButton!
     @IBOutlet weak var m_bottomView: UIView!
     
-    var m_assetGridThumbnailSize: CGSize = CGSizeZero
+//    var m_assetGridThumbnailSize: CGSize = CGSizeZero
     let m_minLineSpace: CGFloat = 10.0
     let m_minItemSpace: CGFloat = 0.0
     let m_collectionTop: CGFloat = 0
@@ -71,12 +71,14 @@ class MyPhotoPreviewVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 	
-        self.initData()
         self.initSubViews()
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
+        
+        self.m_collectionView.layoutIfNeeded()
+        self.m_collectionView.scrollToItemAtIndexPath(NSIndexPath.init(forItem: self.m_firstIndexPath.item, inSection: 0), atScrollPosition: .Left, animated: true)
 		
 		self.navigationController?.setNavigationBarHidden(true, animated: false)
 	}
@@ -93,19 +95,17 @@ class MyPhotoPreviewVC: UIViewController {
 }
 
 extension MyPhotoPreviewVC {
-    func initData() {
-        self.initWithCollectionView()
-
-        // 计算出小图大小 （ 为targetSize做准备 ）
-        let scale: CGFloat = 1.0
-        let cellSize = (self.m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
-        
-        self.m_assetGridThumbnailSize = CGSizeMake(cellSize.width*scale, cellSize.height*scale)
-    }
-    
+//    func initData() {
+//
+//        // 计算出小图大小 （ 为targetSize做准备 ）
+//        let scale: CGFloat = 1.0
+//        let cellSize = (self.m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
+//        
+//        self.m_assetGridThumbnailSize = CGSizeMake(cellSize.width*scale, cellSize.height*scale)
+//    }
+//    
     func initSubViews() {
-        self.m_collectionView.layoutIfNeeded()
-        self.m_collectionView.scrollToItemAtIndexPath(NSIndexPath.init(forItem: self.m_firstIndexPath.item, inSection: 0), atScrollPosition: .Left, animated: true)
+        self.initWithCollectionView()
         
         self.m_bottomView.addSubview(self.m_selectedBgView)
         self.m_bottomView.addSubview(self.m_selectedLabel)
@@ -223,7 +223,13 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
         self.m_curIndexPath = NSIndexPath.init(forItem: self.m_allAssets.indexOf(asset)!, inSection: 0)
         self.m_selectButton.selected = self.m_selectedIndex.contains(self.m_curIndexPath)
 
-		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
+        
+        let imageSize: CGSize
+        let aspectRatio: CGFloat = CGFloat(asset.pixelWidth) / CGFloat(asset.pixelHeight)
+        let scale: CGFloat = 1.0
+        imageSize = CGSizeMake(kScreenWidth*scale, CGFloat(asset.pixelHeight)/aspectRatio*scale);
+
+		self.m_imageManager.requestImageForAsset(asset, targetSize: imageSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
 			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
 		}
         

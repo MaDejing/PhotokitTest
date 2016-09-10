@@ -79,6 +79,8 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		self.m_data = data
 		
 		self.m_imageView.image = data.m_img
+        
+        self.imageResize()
     }
 }
 
@@ -91,7 +93,7 @@ extension MyPhotoPreviewCell {
 		
 		let imgSize = img.size
 		let widthRatio = imgSize.width / kScreenWidth
-		
+        		
 		let newSize = CGSizeMake(imgSize.width / widthRatio, imgSize.height / widthRatio)
 		self.m_imageView.frame.size = newSize
         
@@ -102,6 +104,7 @@ extension MyPhotoPreviewCell {
         }
         
         self.m_scrollView.contentOffset = CGPointZero
+        self.m_scrollView.contentSize = CGSizeMake(kScreenWidth, max(kScreenHeight, self.m_imageView.frame.size.height))
     }
     
     // 把从scrollView里截取的矩形区域缩放到整个scrollView当前可视的frame里面。获取所要放大的内容的rect，以点击点为中心。因为放大scale倍，所以截取内容宽高为scrollview的1/scale。

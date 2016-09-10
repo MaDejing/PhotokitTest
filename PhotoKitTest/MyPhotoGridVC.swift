@@ -99,12 +99,15 @@ class MyPhotoGridVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-        self.initData()
 		self.initSubViews()
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
+        
+        self.initData()
+        self.scrollToBottom()
+
     }
 	
 	override func didReceiveMemoryWarning() {
@@ -125,8 +128,6 @@ class MyPhotoGridVC: UIViewController {
 
 extension MyPhotoGridVC {
 	func initData() {
-        self.initWithCollectionView()
-
 		// 计算出小图大小 （ 为targetSize做准备 ）
 		let scale: CGFloat = 2.0
 		let cellSize = (self.m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
@@ -137,9 +138,9 @@ extension MyPhotoGridVC {
 	func initSubViews() {
 		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.Plain, target: self, action:#selector(MyPhotoGridVC.cancel) )
 		self.navigationItem.rightBarButtonItem = rightBarItem
-				
-		self.scrollToBottom()
-		
+        
+        self.initWithCollectionView()
+						
 		self.m_toolBar.addSubview(self.m_selectedBgView)
 		self.m_toolBar.addSubview(self.m_selectedLabel)
 		
