@@ -14,11 +14,11 @@ let kScreenWidth = CGRectGetWidth(UIScreen.mainScreen().bounds)
 let kScreenHeight = CGRectGetHeight(UIScreen.mainScreen().bounds)
 
 class MyPhotoItem: NSObject {
-	var m_img: UIImage!
-	var m_asset: PHAsset!
+	var m_img: UIImage! = UIImage()
+	var m_asset: PHAsset! = PHAsset()
 	var m_index: NSIndexPath!
 	
-	init(image: UIImage, asset: PHAsset, index: NSIndexPath) {
+	func updateWithData(image: UIImage, asset: PHAsset, index: NSIndexPath) {
 		self.m_img = image
 		self.m_asset = asset
 		self.m_index = index
@@ -89,9 +89,7 @@ class MyPhotoGridVC: UIViewController {
 	let m_collectionLeft: CGFloat = 5
 	let m_collectionBottom: CGFloat = 0
 	let m_collectionRight: CGFloat = 5
-    
-    var m_imageRequestID: PHImageRequestID! = 0
-    
+	
     override func awakeFromNib() {
 		super.awakeFromNib()
 		
@@ -125,6 +123,7 @@ class MyPhotoGridVC: UIViewController {
 
 }
 
+// MARK: - Initial Functions
 extension MyPhotoGridVC {
 	func initData() {
 		// 计算出小图大小 （ 为targetSize做准备 ）
@@ -227,7 +226,7 @@ extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
 		if selected {
 			self.m_selectedItems.append(selectedItem)
 		} else {
-		    let index = self.m_selectedItems.indexOf(selectedItem)
+		    let index = self.m_selectedIndex.indexOf(cell.m_data.m_index)
 			
 			if (index != nil) {
 				self.m_selectedItems.removeAtIndex(index!)
@@ -239,7 +238,7 @@ extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
     
     func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selected: [NSIndexPath]) {
         self.m_selectedItems.removeAll()
-        
+		
         for indexPath in selected {
             let selectedItem = MySelectedItem.init(asset: self.m_allAssets[indexPath.item], index: indexPath)
             self.m_selectedItems.append(selectedItem)
@@ -274,36 +273,48 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 		cell.m_delegate = self
 		
 		let asset = self.m_fetchResult[indexPath.item] as! PHAsset
-        
-		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
-			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
+		
+		let option = PHImageRequestOptions()
+		option.resizeMode = .Fast
+		
+		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
+			let item = MyPhotoItem()
+			item.updateWithData(image!, asset: asset, index: indexPath)
+			cell.updateCellWithData(item)
 		}
-        
-//        if (requestID != 0) && (self.m_imageRequestID != 0) && (requestID != self.m_imageRequestID) {
-//            PHImageManager.defaultManager().cancelImageRequest(self.m_imageRequestID)
-//        }
-//        self.m_imageRequestID = requestID
-        
+		
 		cell.m_selectButton.selected = self.m_selectedIndex.contains(indexPath)
 
 		return cell
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyPhotoPreviewVC") as! MyPhotoPreviewVC
-        
-		vc.m_assets = self.m_allAssets
-        vc.m_allAssets = self.m_allAssets
-		vc.m_firstIndexPath = indexPath
-        vc.m_selectedIndex = self.m_selectedIndex
-        vc.m_delegate = self
-		
-		self.navigationController?.pushViewController(vc, animated: true)
+		let asset = self.m_fetchResult[indexPath.item] as! PHAsset
+
+		if (asset.mediaType == .Video) {
+			if self.m_selectedItems.count > 0 {
+				let alert = UIAlertController(title: nil, message: "不能同时选择照片和视频", preferredStyle: .Alert)
+				let cancelAction = UIAlertAction(title: "确定", style: .Cancel, handler: nil)
+				alert.addAction(cancelAction)
+				
+				self.presentViewController(alert, animated: true, completion: nil)
+			} else {
+				
+			}
+			
+		} else {
+			let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyPhotoPreviewVC") as! MyPhotoPreviewVC
+			
+			vc.m_assets = self.m_allAssets
+			vc.m_allAssets = self.m_allAssets
+			vc.m_firstIndexPath = indexPath
+			vc.m_selectedIndex = self.m_selectedIndex
+			vc.m_delegate = self
+			
+			self.navigationController?.pushViewController(vc, animated: true)
+		}
 	}
-	
-	func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
-		
-	}
+
 	
 //	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
 //		return UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)

@@ -70,6 +70,8 @@ class MyPhotoPreviewVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 	
+		self.title = "预览"
+		
         self.initSubViews()
     }
 	
@@ -137,7 +139,7 @@ extension MyPhotoPreviewVC {
         // 计算图片大小
         var imageSize: CGSize = CGSizeMake(CGFloat(asset.pixelWidth), CGFloat(asset.pixelHeight))
         let aspectRatio: CGFloat = CGFloat(asset.pixelWidth) / CGFloat(asset.pixelHeight)
-        imageSize = CGSizeMake(kScreenWidth*scale, CGFloat(asset.pixelHeight)/aspectRatio*scale);
+        imageSize = CGSizeMake(kScreenWidth*scale, kScreenWidth/aspectRatio*scale);
         
         return imageSize
     }
@@ -226,17 +228,21 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
         self.m_curIndexPath = NSIndexPath.init(forItem: self.m_allAssets.indexOf(asset)!, inSection: 0)
         self.m_selectButton.selected = self.m_selectedIndex.contains(self.m_curIndexPath)
 
-        self.m_imageManager.requestImageForAsset(asset, targetSize: self.calImageSize(asset, scale: 1.0), contentMode: PHImageContentMode.AspectFill, options: nil) { (image, nfo) in
-			cell.updateCellWithData(MyPhotoItem(image: image!, asset: asset, index: indexPath))
+		let option = PHImageRequestOptions()
+//		option.resizeMode = .Fast
+		
+        self.m_imageManager.requestImageForAsset(asset, targetSize: self.calImageSize(asset, scale: 1.0), contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
+			let item = MyPhotoItem()
+			item.updateWithData(image!, asset: asset, index: indexPath)
+			cell.updateCellWithData(item)
 		}
-        
+		
 		return cell
 	}
 	
 	func collectionView(collectionView: UICollectionView, willDisplayCell cell: UICollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath) {
-		if let cell = cell as? MyPhotoPreviewCell {
-			cell.imageResize()
-		}
+		guard let cell = cell as? MyPhotoPreviewCell else { return }
+		cell.imageResize()
 	}
 //	
 //	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
