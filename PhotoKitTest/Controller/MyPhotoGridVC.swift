@@ -92,6 +92,8 @@ class MyPhotoGridVC: UIViewController {
 	lazy var m_imageManager: PHCachingImageManager = PHCachingImageManager()
 	var m_assetGridThumbnailSize: CGSize!
 	
+	var m_isPop = true
+	
 	
     override func awakeFromNib() {
 		super.awakeFromNib()
@@ -113,7 +115,9 @@ class MyPhotoGridVC: UIViewController {
 	override func viewWillDisappear(animated: Bool) {
 		super.viewWillDisappear(animated)
 		
-		MyPhotoSelectManager.defaultManager.clearData()
+		if (self.m_isPop) {
+			MyPhotoSelectManager.defaultManager.clearData()
+		}
 	}
 	
 	override func didReceiveMemoryWarning() {
@@ -220,7 +224,9 @@ extension MyPhotoGridVC {
 //		vc.m_selectedItems = self.m_selectedItems
 //      vc.m_selectedIndex = self.m_selectedIndex
         vc.m_delegate = self
-        
+		
+		self.m_isPop = false
+		
         self.navigationController?.pushViewController(vc, animated: true)
 	}
 	
@@ -296,6 +302,7 @@ extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
 		
         self.m_collectionView.reloadData()
 		self.updateToolBarView()
+		self.m_isPop = true
     }
 	
 //    func updateAfterChange() {
@@ -367,6 +374,8 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 //			vc.m_selectedItems = self.m_selectedItems
 //			vc.m_selectedIndex = self.m_selectedIndex
 			vc.m_delegate = self
+			
+			self.m_isPop = false
 			
 			self.navigationController?.pushViewController(vc, animated: true)
 		}
