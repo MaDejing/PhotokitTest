@@ -524,7 +524,7 @@
                                 </variation>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7jh-pO-ooo">
-                                <rect key="frame" x="0.0" y="64" width="600" height="492"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="462"/>
                                 <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <state key="normal" image="play">
                                     <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -533,10 +533,22 @@
                                     <action selector="playClick:" destination="gB3-BL-Hfe" eventType="touchUpInside" id="BXM-iV-Geq"/>
                                 </connections>
                             </button>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="lFe-ex-EGS">
+                                <rect key="frame" x="13" y="526" width="574" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="Pnt-pA-wC8"/>
+                                </constraints>
+                                <connections>
+                                    <action selector="sliderAction:" destination="gB3-BL-Hfe" eventType="touchUpOutside" id="3MH-hj-HJp"/>
+                                    <action selector="sliderAction:" destination="gB3-BL-Hfe" eventType="touchCancel" id="OA9-l8-l27"/>
+                                    <action selector="sliderAction:" destination="gB3-BL-Hfe" eventType="touchUpInside" id="Whw-AV-yRM"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="7jh-pO-ooo" secondAttribute="trailing" id="0yZ-EM-IvF"/>
+                            <constraint firstItem="lFe-ex-EGS" firstAttribute="top" secondItem="7jh-pO-ooo" secondAttribute="bottom" id="2Rc-ue-vWB"/>
                             <constraint firstItem="7jh-pO-ooo" firstAttribute="top" secondItem="cyX-yh-Apv" secondAttribute="bottom" id="5Bm-TH-P63"/>
                             <constraint firstItem="7jh-pO-ooo" firstAttribute="leading" secondItem="sCQ-1J-mE7" secondAttribute="leading" id="CRh-5l-OnR"/>
                             <constraint firstItem="B3d-SH-KIJ" firstAttribute="leading" secondItem="sCQ-1J-mE7" secondAttribute="leading" id="GY6-I1-Axk"/>
@@ -545,13 +557,22 @@
                             <constraint firstItem="B3d-SH-KIJ" firstAttribute="top" secondItem="7jh-pO-ooo" secondAttribute="bottom" id="Rp4-1o-FZU"/>
                             <constraint firstItem="cyX-yh-Apv" firstAttribute="leading" secondItem="sCQ-1J-mE7" secondAttribute="leading" id="XOY-aS-TH9"/>
                             <constraint firstItem="2OF-Aa-goP" firstAttribute="top" secondItem="B3d-SH-KIJ" secondAttribute="bottom" id="dr7-eD-Utz"/>
+                            <constraint firstAttribute="trailing" secondItem="lFe-ex-EGS" secondAttribute="trailing" constant="15" id="g2x-hG-p9f"/>
                             <constraint firstAttribute="trailing" secondItem="cyX-yh-Apv" secondAttribute="trailing" id="msp-sn-2f7"/>
+                            <constraint firstItem="lFe-ex-EGS" firstAttribute="leading" secondItem="sCQ-1J-mE7" secondAttribute="leading" constant="15" id="oEO-t3-WGQ"/>
+                            <constraint firstItem="B3d-SH-KIJ" firstAttribute="top" secondItem="lFe-ex-EGS" secondAttribute="bottom" id="vOL-9t-d7j"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="Rp4-1o-FZU"/>
+                            </mask>
+                        </variation>
                     </view>
                     <connections>
                         <outlet property="m_bottomView" destination="B3d-SH-KIJ" id="OIr-Hd-hQx"/>
                         <outlet property="m_doneButton" destination="aSl-bU-JNm" id="OqZ-hX-fgC"/>
                         <outlet property="m_playButton" destination="7jh-pO-ooo" id="Xcy-Y9-d3W"/>
+                        <outlet property="m_slider" destination="lFe-ex-EGS" id="ydD-BO-DfH"/>
                         <outlet property="m_topView" destination="cyX-yh-Apv" id="93m-lk-XFt"/>
                     </connections>
                 </viewController>

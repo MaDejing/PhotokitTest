@@ -146,11 +146,11 @@
 		CFF8FFF41D8903E7006DDDA5 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				CFF8FFF91D8903E7006DDDA5 /* ViewController.swift */,
 				CFF8FFF61D8903E7006DDDA5 /* MyPhotoPickerVC.swift */,
 				CFF8FFF51D8903E7006DDDA5 /* MyPhotoGridVC.swift */,
 				CFF8FFF71D8903E7006DDDA5 /* MyPhotoPreviewVC.swift */,
 				CFF8FFF81D8903E7006DDDA5 /* MyVideoPreviewVC.swift */,
-				CFF8FFF91D8903E7006DDDA5 /* ViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
