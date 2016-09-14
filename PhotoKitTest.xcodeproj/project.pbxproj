@@ -7,20 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CF185EEE1D7FA6320028E1EF /* MyPhotoPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF185EED1D7FA6320028E1EF /* MyPhotoPickerCell.swift */; };
 		CF8CCE891D76CF1200375F44 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCE881D76CF1200375F44 /* AppDelegate.swift */; };
-		CF8CCE8B1D76CF1200375F44 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCE8A1D76CF1200375F44 /* ViewController.swift */; };
 		CF8CCE901D76CF1200375F44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF8CCE8F1D76CF1200375F44 /* Assets.xcassets */; };
 		CF8CCE931D76CF1200375F44 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8CCE911D76CF1200375F44 /* LaunchScreen.storyboard */; };
 		CF8CCE9E1D76CF1200375F44 /* PhotoKitTestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCE9D1D76CF1200375F44 /* PhotoKitTestTests.swift */; };
 		CF8CCEA91D76CF1200375F44 /* PhotoKitTestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCEA81D76CF1200375F44 /* PhotoKitTestUITests.swift */; };
-		CF8FDC781D7FA87000C34B69 /* MyPhotoPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC771D7FA87000C34B69 /* MyPhotoPickerVC.swift */; };
-		CF8FDC7B1D7FC81200C34B69 /* MyPhotoGridVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC7A1D7FC81200C34B69 /* MyPhotoGridVC.swift */; };
-		CF8FDC7D1D7FD04D00C34B69 /* MyPhotoGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC7C1D7FD04D00C34B69 /* MyPhotoGridCell.swift */; };
 		CF8FDC801D80FC6E00C34B69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8FDC7E1D80FC6E00C34B69 /* Main.storyboard */; };
-		CF8FDC821D8169E500C34B69 /* MyPhotoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */; };
-		CF8FDC841D82B31D00C34B69 /* MyPhotoPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC831D82B31D00C34B69 /* MyPhotoPreviewCell.swift */; };
-		CFF8FFF01D87E8C7006DDDA5 /* MyVideoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFEF1D87E8C7006DDDA5 /* MyVideoPreviewVC.swift */; };
+		CFF800011D8903E7006DDDA5 /* MyPhotoGridVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFF51D8903E7006DDDA5 /* MyPhotoGridVC.swift */; };
+		CFF800021D8903E7006DDDA5 /* MyPhotoPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFF61D8903E7006DDDA5 /* MyPhotoPickerVC.swift */; };
+		CFF800031D8903E7006DDDA5 /* MyPhotoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFF71D8903E7006DDDA5 /* MyPhotoPreviewVC.swift */; };
+		CFF800041D8903E7006DDDA5 /* MyVideoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFF81D8903E7006DDDA5 /* MyVideoPreviewVC.swift */; };
+		CFF800051D8903E7006DDDA5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFF91D8903E7006DDDA5 /* ViewController.swift */; };
+		CFF800071D8903E7006DDDA5 /* MyPhotoSelectManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFFC1D8903E7006DDDA5 /* MyPhotoSelectManager.swift */; };
+		CFF800081D8903E7006DDDA5 /* MyPhotoGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFFE1D8903E7006DDDA5 /* MyPhotoGridCell.swift */; };
+		CFF800091D8903E7006DDDA5 /* MyPhotoPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFFF1D8903E7006DDDA5 /* MyPhotoPickerCell.swift */; };
+		CFF8000A1D8903E7006DDDA5 /* MyPhotoPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF800001D8903E7006DDDA5 /* MyPhotoPreviewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,10 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		CF185EED1D7FA6320028E1EF /* MyPhotoPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPickerCell.swift; sourceTree = "<group>"; };
 		CF8CCE851D76CF1200375F44 /* PhotoKitTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoKitTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF8CCE881D76CF1200375F44 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		CF8CCE8A1D76CF1200375F44 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		CF8CCE8F1D76CF1200375F44 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CF8CCE921D76CF1200375F44 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CF8CCE941D76CF1200375F44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -54,13 +53,16 @@
 		CF8CCEA41D76CF1200375F44 /* PhotoKitTestUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoKitTestUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF8CCEA81D76CF1200375F44 /* PhotoKitTestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoKitTestUITests.swift; sourceTree = "<group>"; };
 		CF8CCEAA1D76CF1200375F44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		CF8FDC771D7FA87000C34B69 /* MyPhotoPickerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPickerVC.swift; sourceTree = "<group>"; };
-		CF8FDC7A1D7FC81200C34B69 /* MyPhotoGridVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoGridVC.swift; sourceTree = "<group>"; };
-		CF8FDC7C1D7FD04D00C34B69 /* MyPhotoGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoGridCell.swift; sourceTree = "<group>"; };
 		CF8FDC7F1D80FC6E00C34B69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewVC.swift; sourceTree = "<group>"; };
-		CF8FDC831D82B31D00C34B69 /* MyPhotoPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewCell.swift; sourceTree = "<group>"; };
-		CFF8FFEF1D87E8C7006DDDA5 /* MyVideoPreviewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyVideoPreviewVC.swift; sourceTree = "<group>"; };
+		CFF800001D8903E7006DDDA5 /* MyPhotoPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewCell.swift; sourceTree = "<group>"; };
+		CFF8FFF51D8903E7006DDDA5 /* MyPhotoGridVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoGridVC.swift; sourceTree = "<group>"; };
+		CFF8FFF61D8903E7006DDDA5 /* MyPhotoPickerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPickerVC.swift; sourceTree = "<group>"; };
+		CFF8FFF71D8903E7006DDDA5 /* MyPhotoPreviewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewVC.swift; sourceTree = "<group>"; };
+		CFF8FFF81D8903E7006DDDA5 /* MyVideoPreviewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyVideoPreviewVC.swift; sourceTree = "<group>"; };
+		CFF8FFF91D8903E7006DDDA5 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		CFF8FFFC1D8903E7006DDDA5 /* MyPhotoSelectManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoSelectManager.swift; sourceTree = "<group>"; };
+		CFF8FFFE1D8903E7006DDDA5 /* MyPhotoGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoGridCell.swift; sourceTree = "<group>"; };
+		CFF8FFFF1D8903E7006DDDA5 /* MyPhotoPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPickerCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,15 +113,10 @@
 		CF8CCE871D76CF1200375F44 /* PhotoKitTest */ = {
 			isa = PBXGroup;
 			children = (
+				CFF8FFFA1D8903E7006DDDA5 /* Model */,
+				CFF8FFF41D8903E7006DDDA5 /* Controller */,
+				CFF8FFFD1D8903E7006DDDA5 /* View */,
 				CF8CCE881D76CF1200375F44 /* AppDelegate.swift */,
-				CF8CCE8A1D76CF1200375F44 /* ViewController.swift */,
-				CF8FDC771D7FA87000C34B69 /* MyPhotoPickerVC.swift */,
-				CF8FDC7A1D7FC81200C34B69 /* MyPhotoGridVC.swift */,
-				CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */,
-				CFF8FFEF1D87E8C7006DDDA5 /* MyVideoPreviewVC.swift */,
-				CF185EED1D7FA6320028E1EF /* MyPhotoPickerCell.swift */,
-				CF8FDC7C1D7FD04D00C34B69 /* MyPhotoGridCell.swift */,
-				CF8FDC831D82B31D00C34B69 /* MyPhotoPreviewCell.swift */,
 				CF8FDC7E1D80FC6E00C34B69 /* Main.storyboard */,
 				CF8CCE8F1D76CF1200375F44 /* Assets.xcassets */,
 				CF8CCE911D76CF1200375F44 /* LaunchScreen.storyboard */,
@@ -144,6 +141,36 @@
 				CF8CCEAA1D76CF1200375F44 /* Info.plist */,
 			);
 			path = PhotoKitTestUITests;
+			sourceTree = "<group>";
+		};
+		CFF8FFF41D8903E7006DDDA5 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				CFF8FFF61D8903E7006DDDA5 /* MyPhotoPickerVC.swift */,
+				CFF8FFF51D8903E7006DDDA5 /* MyPhotoGridVC.swift */,
+				CFF8FFF71D8903E7006DDDA5 /* MyPhotoPreviewVC.swift */,
+				CFF8FFF81D8903E7006DDDA5 /* MyVideoPreviewVC.swift */,
+				CFF8FFF91D8903E7006DDDA5 /* ViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		CFF8FFFA1D8903E7006DDDA5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				CFF8FFFC1D8903E7006DDDA5 /* MyPhotoSelectManager.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		CFF8FFFD1D8903E7006DDDA5 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				CFF8FFFF1D8903E7006DDDA5 /* MyPhotoPickerCell.swift */,
+				CFF8FFFE1D8903E7006DDDA5 /* MyPhotoGridCell.swift */,
+				CFF800001D8903E7006DDDA5 /* MyPhotoPreviewCell.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -277,15 +304,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF8FDC7D1D7FD04D00C34B69 /* MyPhotoGridCell.swift in Sources */,
-				CF8FDC821D8169E500C34B69 /* MyPhotoPreviewVC.swift in Sources */,
-				CF8CCE8B1D76CF1200375F44 /* ViewController.swift in Sources */,
-				CF185EEE1D7FA6320028E1EF /* MyPhotoPickerCell.swift in Sources */,
+				CFF800071D8903E7006DDDA5 /* MyPhotoSelectManager.swift in Sources */,
+				CFF800051D8903E7006DDDA5 /* ViewController.swift in Sources */,
+				CFF800031D8903E7006DDDA5 /* MyPhotoPreviewVC.swift in Sources */,
 				CF8CCE891D76CF1200375F44 /* AppDelegate.swift in Sources */,
-				CF8FDC781D7FA87000C34B69 /* MyPhotoPickerVC.swift in Sources */,
-				CFF8FFF01D87E8C7006DDDA5 /* MyVideoPreviewVC.swift in Sources */,
-				CF8FDC841D82B31D00C34B69 /* MyPhotoPreviewCell.swift in Sources */,
-				CF8FDC7B1D7FC81200C34B69 /* MyPhotoGridVC.swift in Sources */,
+				CFF800021D8903E7006DDDA5 /* MyPhotoPickerVC.swift in Sources */,
+				CFF8000A1D8903E7006DDDA5 /* MyPhotoPreviewCell.swift in Sources */,
+				CFF800091D8903E7006DDDA5 /* MyPhotoPickerCell.swift in Sources */,
+				CFF800081D8903E7006DDDA5 /* MyPhotoGridCell.swift in Sources */,
+				CFF800041D8903E7006DDDA5 /* MyVideoPreviewVC.swift in Sources */,
+				CFF800011D8903E7006DDDA5 /* MyPhotoGridVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
