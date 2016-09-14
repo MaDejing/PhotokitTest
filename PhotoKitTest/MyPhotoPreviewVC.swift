@@ -11,7 +11,7 @@ import UIKit
 import Photos
 
 protocol MyPhotoPreviewVCDelegate: NSObjectProtocol {
-    func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selected: [NSIndexPath])
+	func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selectedItems: [MySelectedItem], selectedIndex: [NSIndexPath])
 }
 
 class MyPhotoPreviewVC: UIViewController {
@@ -33,7 +33,7 @@ class MyPhotoPreviewVC: UIViewController {
     
     lazy var m_selectedBgView: UIView = {
         var tempBgView = UIView.init(frame: CGRectMake(kScreenWidth-84, (44-self.m_selectedLabelWidth)/2, self.m_selectedLabelWidth, self.m_selectedLabelWidth))
-        tempBgView.backgroundColor = UIColor.blackColor()
+        tempBgView.backgroundColor = UIColor(red: 31/255.0, green: 183/255.0, blue: 27/255.0, alpha: 1)
         tempBgView.layer.cornerRadius = 15
         tempBgView.layer.masksToBounds = true
         
@@ -54,6 +54,7 @@ class MyPhotoPreviewVC: UIViewController {
     var m_allAssets: [PHAsset]! = []
 	var m_firstIndexPath: NSIndexPath! = NSIndexPath.init(forItem: 0, inSection: 0)
     var m_selectedIndex: [NSIndexPath]! = []
+	var m_selectedItems: [MySelectedItem] = []
     
     var m_curIndexPath: NSIndexPath!
     
@@ -148,30 +149,75 @@ extension MyPhotoPreviewVC {
 extension MyPhotoPreviewVC {
 	
 	@IBAction func backClick(sender: AnyObject) {
-        self.m_delegate?.afterChangeSelectedItem(self, selected: self.m_selectedIndex)
+        self.m_delegate?.afterChangeSelectedItem(self, selectedItems: self.m_selectedItems, selectedIndex: self.m_selectedIndex)
         
 		self.navigationController?.popViewControllerAnimated(true)
 	}
 	
 	@IBAction func selectClick(sender: AnyObject) {
-        self.m_selectButton.selected = !self.m_selectButton.selected
-        
-        if self.m_selectButton.selected {
-            self.m_selectedIndex.append(self.m_curIndexPath)
-        } else {
-            let index = self.m_selectedIndex.indexOf(self.m_curIndexPath)
-            
-            if (index != nil) {
-                self.m_selectedIndex.removeAtIndex(index!)
-            }
-        }
-        
-        self.updateBottomView()
+		if self.m_selectedItems.count >= 9 && !self.m_selectButton.selected {
+			let alert = UIAlertController(title: nil, message: "最多可选择9张照片", preferredStyle: .Alert)
+			let cancelAction = UIAlertAction(title: "确定", style: .Cancel, handler: nil)
+			
+			alert.addAction(cancelAction)
+			
+			self.presentViewController(alert, animated: true, completion: nil)
+		} else {
+		
+			self.m_selectButton.selected = !self.m_selectButton.selected
+					
+			let selectedItem = MySelectedItem.init(asset: self.m_allAssets[self.m_curIndexPath.item], index: self.m_curIndexPath)
+			
+			if self.m_selectButton.selected {
+				self.m_selectedItems.append(selectedItem)
+			} else {
+				let index = self.m_selectedIndex.indexOf(self.m_curIndexPath)
+				
+				if (index != nil) {
+					self.m_selectedItems.removeAtIndex(index!)
+				}
+			}
+			
+			self.m_selectedItems.sortInPlace { (item1, item2) -> Bool in
+				return item1.m_index.item < item2.m_index.item
+			}
+			
+			self.m_selectedIndex.removeAll()
+			for asset in self.m_selectedItems {
+				self.m_selectedIndex.append(asset.m_index)
+			}
+			
+			self.updateBottomView()
+		}
 	}
-    
+	
     @IBAction func m_doneClick(sender: AnyObject) {
+		var hasVideo: Bool = false
+		
+		for item in self.m_selectedItems {
+			if (item.m_asset.mediaType == .Video) {
+				hasVideo = true
+				break
+			}
+		}
+		
+		if hasVideo {
+			let alert = UIAlertController(title: nil, message: "您同时选中了照片和视频，视频将作为照片发送", preferredStyle: .Alert)
+			let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+			let doneAction = UIAlertAction(title: "确定", style: .Default, handler: { (action) in
+				print(self.m_selectedItems)
+				self.dismissViewControllerAnimated(true, completion: nil)
+			})
+			
+			alert.addAction(cancelAction)
+			alert.addAction(doneAction)
+			
+			self.presentViewController(alert, animated: true, completion: nil)
+		} else {
+			print(self.m_selectedItems)
+			self.dismissViewControllerAnimated(true, completion: nil)
+		}
     }
-    
 }
 
 extension MyPhotoPreviewVC: UIScrollViewDelegate {
@@ -230,8 +276,10 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
 
 		let option = PHImageRequestOptions()
 //		option.resizeMode = .Fast
+		option.deliveryMode = .HighQualityFormat
+		option.synchronous = true
 		
-        self.m_imageManager.requestImageForAsset(asset, targetSize: self.calImageSize(asset, scale: 1.0), contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
+        self.m_imageManager.requestImageForAsset(asset, targetSize: self.calImageSize(asset, scale: 1.5), contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
 			let item = MyPhotoItem()
 			item.updateWithData(image!, asset: asset, index: indexPath)
 			cell.updateCellWithData(item)

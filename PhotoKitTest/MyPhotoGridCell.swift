@@ -41,7 +41,6 @@ class MyPhotoGridCell: UICollectionViewCell {
 		self.m_imageView.image = data.m_img
 		
 		self.m_videoView.hidden = !(data.m_asset.mediaType == .Video)
-		self.m_selectButton.hidden = !(data.m_asset.mediaType == .Image)
 		
 		if (data.m_asset.mediaType == .Video) {
 			let length = Int(round(data.m_asset.duration))
@@ -66,7 +65,7 @@ class MyPhotoGridCell: UICollectionViewCell {
 	
 	@IBAction func photoSelect(sender: AnyObject) {
 		let button  = sender as! UIButton
-		button.selected = !button.selected;
+//		button.selected = !button.selected;
 		
 		self.m_delegate!.myPhotoGridCellButtonSelect(self, selected: button.selected)
 	}

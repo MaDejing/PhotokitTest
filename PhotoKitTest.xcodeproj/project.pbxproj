@@ -20,6 +20,7 @@
 		CF8FDC801D80FC6E00C34B69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8FDC7E1D80FC6E00C34B69 /* Main.storyboard */; };
 		CF8FDC821D8169E500C34B69 /* MyPhotoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */; };
 		CF8FDC841D82B31D00C34B69 /* MyPhotoPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8FDC831D82B31D00C34B69 /* MyPhotoPreviewCell.swift */; };
+		CFF8FFF01D87E8C7006DDDA5 /* MyVideoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFEF1D87E8C7006DDDA5 /* MyVideoPreviewVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		CF8FDC7F1D80FC6E00C34B69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewVC.swift; sourceTree = "<group>"; };
 		CF8FDC831D82B31D00C34B69 /* MyPhotoPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewCell.swift; sourceTree = "<group>"; };
+		CFF8FFEF1D87E8C7006DDDA5 /* MyVideoPreviewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyVideoPreviewVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +116,7 @@
 				CF8FDC771D7FA87000C34B69 /* MyPhotoPickerVC.swift */,
 				CF8FDC7A1D7FC81200C34B69 /* MyPhotoGridVC.swift */,
 				CF8FDC811D8169E500C34B69 /* MyPhotoPreviewVC.swift */,
+				CFF8FFEF1D87E8C7006DDDA5 /* MyVideoPreviewVC.swift */,
 				CF185EED1D7FA6320028E1EF /* MyPhotoPickerCell.swift */,
 				CF8FDC7C1D7FD04D00C34B69 /* MyPhotoGridCell.swift */,
 				CF8FDC831D82B31D00C34B69 /* MyPhotoPreviewCell.swift */,
@@ -280,6 +283,7 @@
 				CF185EEE1D7FA6320028E1EF /* MyPhotoPickerCell.swift in Sources */,
 				CF8CCE891D76CF1200375F44 /* AppDelegate.swift in Sources */,
 				CF8FDC781D7FA87000C34B69 /* MyPhotoPickerVC.swift in Sources */,
+				CFF8FFF01D87E8C7006DDDA5 /* MyVideoPreviewVC.swift in Sources */,
 				CF8FDC841D82B31D00C34B69 /* MyPhotoPreviewCell.swift in Sources */,
 				CF8FDC7B1D7FC81200C34B69 /* MyPhotoGridVC.swift in Sources */,
 			);

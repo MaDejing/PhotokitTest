@@ -49,7 +49,7 @@ class MyPhotoGridVC: UIViewController {
 	
 	lazy var m_selectedBgView: UIView = {
 		var tempBgView = UIView.init(frame: CGRectMake(kScreenWidth-56-28, (44-self.m_selectedLabelWidth)/2, self.m_selectedLabelWidth, self.m_selectedLabelWidth))
-		tempBgView.backgroundColor = UIColor.blackColor()
+		tempBgView.backgroundColor = UIColor(red: 31/255.0, green: 183/255.0, blue: 27/255.0, alpha: 1)
 		tempBgView.layer.cornerRadius = 15
 		tempBgView.layer.masksToBounds = true
 		
@@ -208,6 +208,7 @@ extension MyPhotoGridVC {
         vc.m_assets = assets
         vc.m_allAssets = self.m_allAssets
         vc.m_firstIndexPath = NSIndexPath.init(forItem: 0, inSection: 0)
+		vc.m_selectedItems = self.m_selectedItems
         vc.m_selectedIndex = self.m_selectedIndex
         vc.m_delegate = self
         
@@ -215,39 +216,74 @@ extension MyPhotoGridVC {
 	}
 	
 	@IBAction func doneClick(sender: AnyObject) {
+		var hasVideo: Bool = false
 		
+		for item in self.m_selectedItems {
+			if (item.m_asset.mediaType == .Video) {
+				hasVideo = true
+				break
+			}
+		}
+		
+		if hasVideo {
+			let alert = UIAlertController(title: nil, message: "您同时选中了照片和视频，视频将作为照片发送", preferredStyle: .Alert)
+			let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
+			let doneAction = UIAlertAction(title: "确定", style: .Default, handler: { (action) in
+				print(self.m_selectedItems)
+				self.dismissViewControllerAnimated(true, completion: nil)
+			})
+			
+			alert.addAction(cancelAction)
+			alert.addAction(doneAction)
+			
+			self.presentViewController(alert, animated: true, completion: nil)
+		} else {
+			print(self.m_selectedItems)
+			self.dismissViewControllerAnimated(true, completion: nil)
+		}
 	}
 }
 
 extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
 	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell, selected: Bool) {
-        let selectedItem = MySelectedItem.init(asset: cell.m_data.m_asset, index: cell.m_data.m_index)
-        
-		if selected {
-			self.m_selectedItems.append(selectedItem)
-		} else {
-		    let index = self.m_selectedIndex.indexOf(cell.m_data.m_index)
+
+		if self.m_selectedItems.count >= 9 && !selected {
+			let alert = UIAlertController(title: nil, message: "最多可选择9张照片", preferredStyle: .Alert)
+			let cancelAction = UIAlertAction(title: "确定", style: .Cancel, handler: nil)
 			
-			if (index != nil) {
-				self.m_selectedItems.removeAtIndex(index!)
+			alert.addAction(cancelAction)
+			
+			self.presentViewController(alert, animated: true, completion: nil)
+		} else {
+			cell.m_selectButton.selected = !cell.m_selectButton.selected
+			
+			let selectedItem = MySelectedItem.init(asset: cell.m_data.m_asset, index: cell.m_data.m_index)
+			
+			if cell.m_selectButton.selected {
+				self.m_selectedItems.append(selectedItem)
+			} else {
+				let index = self.m_selectedIndex.indexOf(cell.m_data.m_index)
+				
+				if (index != nil) {
+					self.m_selectedItems.removeAtIndex(index!)
+				}
 			}
+			
+			self.updateAfterChange()
 		}
-        
-        self.updateAfterChange()
 	}
     
-    func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selected: [NSIndexPath]) {
+	func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selectedItems: [MySelectedItem], selectedIndex: [NSIndexPath]) {
         self.m_selectedItems.removeAll()
+		self.m_selectedIndex.removeAll()
 		
-        for indexPath in selected {
-            let selectedItem = MySelectedItem.init(asset: self.m_allAssets[indexPath.item], index: indexPath)
-            self.m_selectedItems.append(selectedItem)
-        }
+		self.m_selectedItems = selectedItems
+		self.m_selectedIndex = selectedIndex
         
         self.m_collectionView.reloadData()
-        self.updateAfterChange()
+		self.updateToolBarView()
     }
-    
+	
     func updateAfterChange() {
         self.m_selectedItems.sortInPlace { (item1, item2) -> Bool in
             return item1.m_index.item < item2.m_index.item
@@ -289,17 +325,23 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+		collectionView.deselectItemAtIndexPath(indexPath, animated: true)
+		
 		let asset = self.m_fetchResult[indexPath.item] as! PHAsset
 
 		if (asset.mediaType == .Video) {
 			if self.m_selectedItems.count > 0 {
-				let alert = UIAlertController(title: nil, message: "不能同时选择照片和视频", preferredStyle: .Alert)
+				let alert = UIAlertController(title: nil, message: "选择照片时不能预览视频", preferredStyle: .Alert)
 				let cancelAction = UIAlertAction(title: "确定", style: .Cancel, handler: nil)
 				alert.addAction(cancelAction)
 				
 				self.presentViewController(alert, animated: true, completion: nil)
 			} else {
+				let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyVideoPreviewVC") as! MyVideoPreviewVC
 				
+				vc.m_asset = asset
+				
+				self.navigationController?.pushViewController(vc, animated: true)
 			}
 			
 		} else {
@@ -308,6 +350,7 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 			vc.m_assets = self.m_allAssets
 			vc.m_allAssets = self.m_allAssets
 			vc.m_firstIndexPath = indexPath
+			vc.m_selectedItems = self.m_selectedItems
 			vc.m_selectedIndex = self.m_selectedIndex
 			vc.m_delegate = self
 			
