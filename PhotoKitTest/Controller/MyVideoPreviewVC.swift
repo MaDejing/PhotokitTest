@@ -23,6 +23,8 @@ class MyVideoPreviewVC: UIViewController {
 	
 	var m_isReadyToPlay = false
 	
+	var m_observer: AnyObject!
+	
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,7 +98,7 @@ extension MyVideoPreviewVC {
 	
 	func updateSliderValue() {
 		// 1秒显示30帧
-		self.m_player.addPeriodicTimeObserverForInterval(CMTimeMake(33, 1000), queue: dispatch_get_main_queue()) {
+		self.m_observer = self.m_player.addPeriodicTimeObserverForInterval(CMTimeMake(33, 1000), queue: dispatch_get_main_queue()) {
 			(time) in
 			
 			let current = CMTimeGetSeconds(time)
@@ -160,7 +162,11 @@ extension MyVideoPreviewVC {
 	@IBAction func doneClick(sender: AnyObject) {
 	}
 	
-	@IBAction func sliderAction(sender: AnyObject) {
+	@IBAction func sliderDown(sender: AnyObject) {
+		self.m_player.removeTimeObserver(self.m_observer)
+	}
+	
+	@IBAction func sliderUp(sender: AnyObject) {
 		let durTime = Float(CMTimeGetSeconds((self.m_player.currentItem?.duration)!))
 
 		let startTime = CMTimeMake(Int64(self.m_slider.value*durTime), 1)
@@ -174,6 +180,8 @@ extension MyVideoPreviewVC {
 						self.playVideo()
 					}
 				}
+				
+				self.updateSliderValue()
 			}
 		})
 	}

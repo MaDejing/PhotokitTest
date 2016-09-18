@@ -16,8 +16,6 @@ class MyPhotoPickerCell: UITableViewCell {
 	@IBOutlet weak var m_count: UILabel!
 	@IBOutlet weak var m_imageView: UIImageView!
 	
-	let m_imageManager: PHImageManager = PHImageManager()
-		
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
@@ -38,8 +36,11 @@ class MyPhotoPickerCell: UITableViewCell {
 		let content = data.m_content
 		self.m_count.text = "(\(content.count))";
 		
+		let option = PHImageRequestOptions()
+		option.resizeMode = .Fast
+		
 		let lastAssert = content.lastObject as! PHAsset
-		self.m_imageManager.requestImageForAsset(lastAssert, targetSize: CGSizeMake(MyPhotoPickerCell.getCellHeight(), MyPhotoPickerCell.getCellHeight()), contentMode: .AspectFill, options: nil) { (image, nfo) in
+		PHImageManager.defaultManager().requestImageForAsset(lastAssert, targetSize: CGSizeMake(MyPhotoPickerCell.getCellHeight(), MyPhotoPickerCell.getCellHeight()), contentMode: .AspectFill, options: option) { (image, nfo) in
 			self.m_imageView.image = image
 		}
 	}

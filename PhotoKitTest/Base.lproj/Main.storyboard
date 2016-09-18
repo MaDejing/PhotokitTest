@@ -539,9 +539,10 @@
                                     <constraint firstAttribute="height" constant="30" id="Pnt-pA-wC8"/>
                                 </constraints>
                                 <connections>
-                                    <action selector="sliderAction:" destination="gB3-BL-Hfe" eventType="touchUpOutside" id="3MH-hj-HJp"/>
-                                    <action selector="sliderAction:" destination="gB3-BL-Hfe" eventType="touchCancel" id="OA9-l8-l27"/>
-                                    <action selector="sliderAction:" destination="gB3-BL-Hfe" eventType="touchUpInside" id="Whw-AV-yRM"/>
+                                    <action selector="sliderDown:" destination="gB3-BL-Hfe" eventType="touchDown" id="vdw-f1-2A2"/>
+                                    <action selector="sliderUp:" destination="gB3-BL-Hfe" eventType="touchUpOutside" id="AEY-jI-FhD"/>
+                                    <action selector="sliderUp:" destination="gB3-BL-Hfe" eventType="touchUpInside" id="FFb-sv-18C"/>
+                                    <action selector="sliderUp:" destination="gB3-BL-Hfe" eventType="touchCancel" id="leO-Ml-6T5"/>
                                 </connections>
                             </slider>
                         </subviews>

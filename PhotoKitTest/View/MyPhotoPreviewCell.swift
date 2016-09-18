@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Photos
 
 protocol MyPhotoPreviewCellDelegate: NSObjectProtocol {
 	func afterSingleTap(cell: MyPhotoPreviewCell)
@@ -83,6 +84,19 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 	
 	static func getCellIdentifier() -> String {
 		return "MyPhotoPreviewCell"
+	}
+	
+	func updateData(asset: PHAsset, size: CGSize, indexPath: NSIndexPath) {
+		
+		let option = PHImageRequestOptions()
+		option.deliveryMode = .HighQualityFormat
+//		option.synchronous = true
+		
+		MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
+			let item = MyPhotoItem()
+			item.updateWithData(image, asset: asset, index: indexPath)
+			self.updateCellWithData(item)
+		}
 	}
 	
 	func updateCellWithData(data: MyPhotoItem) {

@@ -7,6 +7,17 @@
 //
 
 import UIKit
+import Photos
+
+class MySelectedItem: NSObject {
+	var m_asset: PHAsset!
+	var m_index: NSIndexPath!
+	
+	init(asset: PHAsset, index: NSIndexPath) {
+		self.m_asset = asset
+		self.m_index = index
+	}
+}
 
 class MyPhotoSelectManager: NSObject {
 	

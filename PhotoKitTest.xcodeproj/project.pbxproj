@@ -22,6 +22,7 @@
 		CFF800081D8903E7006DDDA5 /* MyPhotoGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFFE1D8903E7006DDDA5 /* MyPhotoGridCell.swift */; };
 		CFF800091D8903E7006DDDA5 /* MyPhotoPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFFF1D8903E7006DDDA5 /* MyPhotoPickerCell.swift */; };
 		CFF8000A1D8903E7006DDDA5 /* MyPhotoPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF800001D8903E7006DDDA5 /* MyPhotoPreviewCell.swift */; };
+		CFF800231D8E2D1C006DDDA5 /* MyPhotoImageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF800221D8E2D1C006DDDA5 /* MyPhotoImageManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		CF8CCEAA1D76CF1200375F44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CF8FDC7F1D80FC6E00C34B69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CFF800001D8903E7006DDDA5 /* MyPhotoPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewCell.swift; sourceTree = "<group>"; };
+		CFF800221D8E2D1C006DDDA5 /* MyPhotoImageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoImageManager.swift; sourceTree = "<group>"; };
 		CFF8FFF51D8903E7006DDDA5 /* MyPhotoGridVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoGridVC.swift; sourceTree = "<group>"; };
 		CFF8FFF61D8903E7006DDDA5 /* MyPhotoPickerVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPickerVC.swift; sourceTree = "<group>"; };
 		CFF8FFF71D8903E7006DDDA5 /* MyPhotoPreviewVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewVC.swift; sourceTree = "<group>"; };
@@ -158,6 +160,7 @@
 		CFF8FFFA1D8903E7006DDDA5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				CFF800221D8E2D1C006DDDA5 /* MyPhotoImageManager.swift */,
 				CFF8FFFC1D8903E7006DDDA5 /* MyPhotoSelectManager.swift */,
 			);
 			path = Model;
@@ -312,6 +315,7 @@
 				CFF8000A1D8903E7006DDDA5 /* MyPhotoPreviewCell.swift in Sources */,
 				CFF800091D8903E7006DDDA5 /* MyPhotoPickerCell.swift in Sources */,
 				CFF800081D8903E7006DDDA5 /* MyPhotoGridCell.swift in Sources */,
+				CFF800231D8E2D1C006DDDA5 /* MyPhotoImageManager.swift in Sources */,
 				CFF800041D8903E7006DDDA5 /* MyVideoPreviewVC.swift in Sources */,
 				CFF800011D8903E7006DDDA5 /* MyPhotoGridVC.swift in Sources */,
 			);

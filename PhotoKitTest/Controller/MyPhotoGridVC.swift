@@ -25,16 +25,6 @@ class MyPhotoItem: NSObject {
 	}
 }
 
-class MySelectedItem: NSObject {
-    var m_asset: PHAsset!
-    var m_index: NSIndexPath!
-    
-    init(asset: PHAsset, index: NSIndexPath) {
-        self.m_asset = asset
-        self.m_index = index
-    }
-}
-
 class MyPhotoGridVC: UIViewController {
 	
 	// StoryBoard相关
@@ -42,9 +32,6 @@ class MyPhotoGridVC: UIViewController {
 	@IBOutlet weak var m_preview: UIBarButtonItem!
 	@IBOutlet weak var m_done: UIBarButtonItem!
 	@IBOutlet weak var m_toolBar: UIToolbar!
-	
-//	var m_selectedItems: [MySelectedItem]! = []
-//	var m_selectedIndex: [NSIndexPath]! = []
 	
 	// 视图相关
 	let m_selectedLabelWidth: CGFloat = 30
@@ -89,16 +76,12 @@ class MyPhotoGridVC: UIViewController {
         return tempArr
     }()
     
-	lazy var m_imageManager: PHCachingImageManager = PHCachingImageManager()
 	var m_assetGridThumbnailSize: CGSize!
 	
 	var m_isPop = true
 	
-	
     override func awakeFromNib() {
 		super.awakeFromNib()
-		
-		self.m_imageManager.stopCachingImagesForAllAssets()
 	}
 	
 	override func viewDidLoad() {
@@ -221,8 +204,6 @@ extension MyPhotoGridVC {
         vc.m_assets = assets
         vc.m_allAssets = self.m_allAssets
         vc.m_firstIndexPath = NSIndexPath.init(forItem: 0, inSection: 0)
-//		vc.m_selectedItems = self.m_selectedItems
-//      vc.m_selectedIndex = self.m_selectedIndex
         vc.m_delegate = self
 		
 		self.m_isPop = false
@@ -262,31 +243,6 @@ extension MyPhotoGridVC {
 
 extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
 	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell, selected: Bool) {
-
-//		if self.m_selectedItems.count >= 9 && !selected {
-//			let alert = UIAlertController(title: nil, message: "最多可选择9张照片", preferredStyle: .Alert)
-//			let cancelAction = UIAlertAction(title: "确定", style: .Cancel, handler: nil)
-//			
-//			alert.addAction(cancelAction)
-//			
-//			self.presentViewController(alert, animated: true, completion: nil)
-//		} else {
-//			cell.m_selectButton.selected = !cell.m_selectButton.selected
-//			
-//			let selectedItem = MySelectedItem.init(asset: cell.m_data.m_asset, index: cell.m_data.m_index)
-//			
-//			if cell.m_selectButton.selected {
-//				self.m_selectedItems.append(selectedItem)
-//			} else {
-//				let index = self.m_selectedIndex.indexOf(cell.m_data.m_index)
-//				
-//				if (index != nil) {
-//					self.m_selectedItems.removeAtIndex(index!)
-//				}
-//			}
-//			
-//			self.updateAfterChange()
-//		}
 		
 		let selectedItem = MySelectedItem.init(asset: cell.m_data.m_asset, index: cell.m_data.m_index)
 		MyPhotoSelectManager.defaultManager.updateSelectItems(self, selected: selected, button: cell.m_selectButton, selectedItem: selectedItem)
@@ -294,29 +250,11 @@ extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
 	}
 	
 	func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selectedItems: [MySelectedItem], selectedIndex: [NSIndexPath]) {
-//        self.m_selectedItems.removeAll()
-//		self.m_selectedIndex.removeAll()
-//		
-//		self.m_selectedItems = selectedItems
-//		self.m_selectedIndex = selectedIndex
 		
         self.m_collectionView.reloadData()
 		self.updateToolBarView()
 		self.m_isPop = true
     }
-	
-//    func updateAfterChange() {
-//        self.m_selectedItems.sortInPlace { (item1, item2) -> Bool in
-//            return item1.m_index.item < item2.m_index.item
-//        }
-//        
-//        self.m_selectedIndex.removeAll()
-//        for asset in self.m_selectedItems {
-//            self.m_selectedIndex.append(asset.m_index)
-//        }
-//        
-//        self.updateToolBarView()
-//    }
 }
 
 extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -331,15 +269,17 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 		
 		let asset = self.m_fetchResult[indexPath.item] as! PHAsset
 		
-		let option = PHImageRequestOptions()
-		option.resizeMode = .Fast
+		cell.updateData(asset, size: self.m_assetGridThumbnailSize, indexPath: indexPath)
 		
-		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
-			let item = MyPhotoItem()
-			item.updateWithData(image!, asset: asset, index: indexPath)
-			cell.updateCellWithData(item)
-		}
-		
+//		let option = PHImageRequestOptions()
+//		option.resizeMode = .Fast
+//		
+//		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
+//			let item = MyPhotoItem()
+//			item.updateWithData(image!, asset: asset, index: indexPath)
+//			cell.updateCellWithData(item)
+//		}
+//		
 		cell.m_selectButton.selected = MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(indexPath)
 
 		return cell
@@ -371,8 +311,6 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 			vc.m_assets = self.m_allAssets
 			vc.m_allAssets = self.m_allAssets
 			vc.m_firstIndexPath = indexPath
-//			vc.m_selectedItems = self.m_selectedItems
-//			vc.m_selectedIndex = self.m_selectedIndex
 			vc.m_delegate = self
 			
 			self.m_isPop = false
@@ -380,22 +318,4 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 			self.navigationController?.pushViewController(vc, animated: true)
 		}
 	}
-
-	
-//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-//		return UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
-//	}
-//	
-//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-//		let width = (kScreenWidth-self.m_minItemSpace*3-self.m_collectionLeft-self.m_collectionRight) / 4
-//		return CGSizeMake(width, width)
-//	}
-//	
-//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
-//		return self.m_minLineSpace
-//	}
-//	
-//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
-//		return self.m_minItemSpace
-//	}
 }

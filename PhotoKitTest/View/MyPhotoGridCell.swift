@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Photos
 
 protocol MyPhotoGridCellDelegate: NSObjectProtocol {
 	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell, selected: Bool)
@@ -25,6 +26,11 @@ class MyPhotoGridCell: UICollectionViewCell {
 	var m_data: MyPhotoItem!
 	
 	
+	var m_representedAssetIdentifier: String!
+	
+	var m_imageRequestID: PHImageRequestID!
+	
+	
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
@@ -33,6 +39,33 @@ class MyPhotoGridCell: UICollectionViewCell {
 	
 	static func getCellIndentifier() -> String {
 		return "MyPhotoGridCell"
+	}
+	
+	func updateData(asset: PHAsset, size: CGSize, indexPath: NSIndexPath) {
+		self.m_representedAssetIdentifier = MyPhotoImageManager.defaultManager.getAssetIndentifier(asset)
+		
+		let option = PHImageRequestOptions()
+		option.resizeMode = .Fast
+		
+		let imageRequestId = MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
+			if (self.m_representedAssetIdentifier == MyPhotoImageManager.defaultManager.getAssetIndentifier(asset)) {
+				let item = MyPhotoItem()
+				item.updateWithData(image, asset: asset, index: indexPath)
+				self.updateCellWithData(item)
+			} else {
+				PHImageManager.defaultManager().cancelImageRequest(self.m_imageRequestID)
+			}
+			
+			if (!isDegraded) {
+				self.m_imageRequestID = 0
+			}
+		}
+				
+		if (self.m_imageRequestID != nil && imageRequestId != self.m_imageRequestID) {
+			PHImageManager.defaultManager().cancelImageRequest(self.m_imageRequestID)
+		}
+		
+		self.m_imageRequestID = imageRequestId
 	}
 	
 	func updateCellWithData(data: MyPhotoItem) {

@@ -49,29 +49,26 @@ class MyPhotoPreviewVC: UIViewController {
         
         return tempLabel
     }()
-    
-	var m_assets: [PHAsset]! = []
-    var m_allAssets: [PHAsset]! = []
-	var m_firstIndexPath: NSIndexPath! = NSIndexPath.init(forItem: 0, inSection: 0)
-//    var m_selectedIndex: [NSIndexPath]! = []
-//	var m_selectedItems: [MySelectedItem] = []
 	
+	/// 需要上级传递的参数
+	/// 需要展示的照片
+	var m_assets: [PHAsset]! = []
+	/// 所有的照片
+    var m_allAssets: [PHAsset]! = []
+	/// 首张展示的照片index
+	var m_firstIndexPath: NSIndexPath! = NSIndexPath.init(forItem: 0, inSection: 0)
+	
+	/// 当前展示的照片index
     var m_curIndexPath: NSIndexPath!
-    
-	lazy var m_imageManager: PHCachingImageManager = PHCachingImageManager()
-    
+	
     weak var m_delegate: MyPhotoPreviewVCDelegate?
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
-		
-		self.m_imageManager.stopCachingImagesForAllAssets()
 	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-	
-		self.title = "预览"
 		
         self.initSubViews()
     }
@@ -155,39 +152,6 @@ extension MyPhotoPreviewVC {
 	}
 	
 	@IBAction func selectClick(sender: AnyObject) {
-//		if self.m_selectedItems.count >= 9 && !self.m_selectButton.selected {
-//			let alert = UIAlertController(title: nil, message: "最多可选择9张照片", preferredStyle: .Alert)
-//			let cancelAction = UIAlertAction(title: "确定", style: .Cancel, handler: nil)
-//			
-//			alert.addAction(cancelAction)
-//			
-//			self.presentViewController(alert, animated: true, completion: nil)
-//		} else {
-//		
-//			self.m_selectButton.selected = !self.m_selectButton.selected
-//					
-//			let selectedItem = MySelectedItem.init(asset: self.m_allAssets[self.m_curIndexPath.item], index: self.m_curIndexPath)
-//			
-//			if self.m_selectButton.selected {
-//				self.m_selectedItems.append(selectedItem)
-//			} else {
-//				let index = self.m_selectedIndex.indexOf(self.m_curIndexPath)
-//				
-//				if (index != nil) {
-//					self.m_selectedItems.removeAtIndex(index!)
-//				}
-//			}
-//			
-//			self.m_selectedItems.sortInPlace { (item1, item2) -> Bool in
-//				return item1.m_index.item < item2.m_index.item
-//			}
-//			
-//			self.m_selectedIndex.removeAll()
-//			for asset in self.m_selectedItems {
-//				self.m_selectedIndex.append(asset.m_index)
-//			}
-//		}
-		
 		let selectedItem = MySelectedItem.init(asset: self.m_allAssets[self.m_curIndexPath.item], index: self.m_curIndexPath)
 		MyPhotoSelectManager.defaultManager.updateSelectItems(self, selected: self.m_selectButton.selected, button: self.m_selectButton, selectedItem: selectedItem)
 		self.updateBottomView()
@@ -276,17 +240,19 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
         
         self.m_curIndexPath = NSIndexPath.init(forItem: self.m_allAssets.indexOf(asset)!, inSection: 0)
         self.m_selectButton.selected = MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(self.m_curIndexPath)
-
-		let option = PHImageRequestOptions()
-//		option.resizeMode = .Fast
-		option.deliveryMode = .HighQualityFormat
-		option.synchronous = true
 		
-        self.m_imageManager.requestImageForAsset(asset, targetSize: self.calImageSize(asset, scale: 1.5), contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
-			let item = MyPhotoItem()
-			item.updateWithData(image!, asset: asset, index: indexPath)
-			cell.updateCellWithData(item)
-		}
+		cell.updateData(asset, size: self.calImageSize(asset, scale: 2.0), indexPath: indexPath)
+
+//		let option = PHImageRequestOptions()
+//		option.deliveryMode = .HighQualityFormat
+//		
+//        self.m_imageManager.requestImageForAsset(asset, targetSize: self.calImageSize(asset, scale: 1.0), contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
+//			let item = MyPhotoItem()
+//			item.updateWithData(image!, asset: asset, index: indexPath)
+//			cell.updateCellWithData(item)
+//		}
+		
+		
 		
 		return cell
 	}
@@ -295,20 +261,4 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
 		guard let cell = cell as? MyPhotoPreviewCell else { return }
 		cell.imageResize()
 	}
-//	
-//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
-//		return self.m_collectionView.frame.size
-//	}
-//	
-//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
-//		return self.m_minLineSpace
-//	}
-//	
-//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
-//		return self.m_minItemSpace
-//	}
-//	
-//	func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAtIndex section: Int) -> UIEdgeInsets {
-//		return UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
-//	}
 }
