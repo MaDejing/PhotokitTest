@@ -112,7 +112,9 @@ extension MyVideoPreviewVC {
 	
 	override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
 		if keyPath == "status" {
-			let status: AVPlayerItemStatus = AVPlayerItemStatus(rawValue: ((change![NSKeyValueChangeKey.newKey] as AnyObject).intValue)!)!
+			
+			let value = (change![NSKeyValueChangeKey.newKey] as? NSNumber)?.intValue
+			let status: AVPlayerItemStatus = AVPlayerItemStatus(rawValue: value!)!
 			
 			switch status {
 			case .unknown:
@@ -129,13 +131,13 @@ extension MyVideoPreviewVC {
 			}
 		}
 		
-		(object as AnyObject).removeObserver(self, forKeyPath: "status")
+		self.m_player.currentItem?.removeObserver(self, forKeyPath: "status")
 	}
 }
 
 extension MyVideoPreviewVC {
 	@IBAction func backClick(_ sender: AnyObject) {
-		self.navigationController?.popViewController(animated: true)
+		_ = self.navigationController?.popViewController(animated: true)
 	}
 	
 	@IBAction func playClick(_ sender: AnyObject) {

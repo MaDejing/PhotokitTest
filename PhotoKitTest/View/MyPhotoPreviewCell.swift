@@ -92,7 +92,7 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		option.deliveryMode = .highQualityFormat
 		option.isSynchronous = true
 		
-		MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
+		let _ = MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
 			let item = MyPhotoItem()
 			item.updateWithData(image, asset: asset, index: indexPath)
 			self.updateCellWithData(item)

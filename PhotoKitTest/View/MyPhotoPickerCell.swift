@@ -33,13 +33,13 @@ class MyPhotoPickerCell: UITableViewCell {
 	func updateRowWithData(_ data: MyPhotoAlbumItem) {
 		self.m_title.text = data.m_title;
 		
-		let content = data.m_content
-		self.m_count.text = "(\(content?.count))";
+		let content: PHFetchResult = data.m_content
+		self.m_count.text = "(\(content.count))";
 		
 		let option = PHImageRequestOptions()
 		option.resizeMode = .fast
 		
-		let lastAssert = content?.lastObject as! PHAsset
+		let lastAssert = content.lastObject as! PHAsset
 		PHImageManager.default().requestImage(for: lastAssert, targetSize: CGSize(width: MyPhotoPickerCell.getCellHeight(), height: MyPhotoPickerCell.getCellHeight()), contentMode: .aspectFill, options: option) { (image, nfo) in
 			self.m_imageView.image = image
 		}

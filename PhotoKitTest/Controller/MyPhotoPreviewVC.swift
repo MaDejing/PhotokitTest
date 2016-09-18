@@ -148,7 +148,7 @@ extension MyPhotoPreviewVC {
 	@IBAction func backClick(_ sender: AnyObject) {
         self.m_delegate?.afterChangeSelectedItem(self, selectedItems: MyPhotoSelectManager.defaultManager.m_selectedItems, selectedIndex: MyPhotoSelectManager.defaultManager.m_selectedIndex as [IndexPath])
         
-		self.navigationController?.popViewController(animated: true)
+		_ = self.navigationController?.popViewController(animated: true)
 	}
 	
 	@IBAction func selectClick(_ sender: AnyObject) {
