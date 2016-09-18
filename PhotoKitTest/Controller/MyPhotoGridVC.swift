@@ -10,34 +10,41 @@ import Foundation
 import UIKit
 import Photos
 
-let kScreenWidth = CGRectGetWidth(UIScreen.mainScreen().bounds)
-let kScreenHeight = CGRectGetHeight(UIScreen.mainScreen().bounds)
+let kScreenWidth = UIScreen.main.bounds.width
+let kScreenHeight = UIScreen.main.bounds.height
+
+private extension UICollectionView {
+	func indexPathsForElements(in rect: CGRect) -> [IndexPath] {
+		let allLayoutAttributes = collectionViewLayout.layoutAttributesForElements(in: rect)!
+		return allLayoutAttributes.map { $0.indexPath }
+	}
+}
 
 class MyPhotoItem: NSObject {
 	var m_img: UIImage! = UIImage()
 	var m_asset: PHAsset! = PHAsset()
-	var m_index: NSIndexPath!
+	var m_index: IndexPath!
 	
-	func updateWithData(image: UIImage, asset: PHAsset, index: NSIndexPath) {
-		self.m_img = image
-		self.m_asset = asset
-		self.m_index = index
+	func updateWithData(_ image: UIImage, asset: PHAsset, index: IndexPath) {
+		m_img = image
+		m_asset = asset
+		m_index = index
 	}
 }
 
 class MyPhotoGridVC: UIViewController {
 	
-	// StoryBoard相关
+	/// StoryBoard相关
 	@IBOutlet weak var m_collectionView: UICollectionView!
 	@IBOutlet weak var m_preview: UIBarButtonItem!
 	@IBOutlet weak var m_done: UIBarButtonItem!
 	@IBOutlet weak var m_toolBar: UIToolbar!
 	
-	// 视图相关
-	let m_selectedLabelWidth: CGFloat = 30
+	/// 视图相关
+	fileprivate let m_selectedLabelWidth: CGFloat = 30
 	
-	lazy var m_selectedBgView: UIView = {
-		var tempBgView = UIView.init(frame: CGRectMake(kScreenWidth-56-28, (44-self.m_selectedLabelWidth)/2, self.m_selectedLabelWidth, self.m_selectedLabelWidth))
+	fileprivate lazy var m_selectedBgView: UIView = {
+		var tempBgView = UIView.init(frame: CGRect(x: kScreenWidth-56-28, y: (44-self.m_selectedLabelWidth)/2, width: self.m_selectedLabelWidth, height: self.m_selectedLabelWidth))
 		tempBgView.backgroundColor = UIColor(red: 31/255.0, green: 183/255.0, blue: 27/255.0, alpha: 1)
 		tempBgView.layer.cornerRadius = 15
 		tempBgView.layer.masksToBounds = true
@@ -45,40 +52,44 @@ class MyPhotoGridVC: UIViewController {
 		return tempBgView
 	}()
 	
-	lazy var m_selectedLabel: UILabel = {
-		var tempLabel = UILabel.init(frame: CGRectMake(kScreenWidth-56-28, (44-self.m_selectedLabelWidth)/2, self.m_selectedLabelWidth, self.m_selectedLabelWidth))
+	fileprivate lazy var m_selectedLabel: UILabel = {
+		var tempLabel = UILabel.init(frame: CGRect(x: kScreenWidth-56-28, y: (44-self.m_selectedLabelWidth)/2, width: self.m_selectedLabelWidth, height: self.m_selectedLabelWidth))
 		tempLabel.font = UIFont(name: "PingFang-SC-Regular", size: 15)
-		tempLabel.textColor = UIColor.whiteColor()
-		tempLabel.textAlignment = .Center
-		tempLabel.backgroundColor = UIColor.clearColor()
+		tempLabel.textColor = UIColor.white
+		tempLabel.textAlignment = .center
+		tempLabel.backgroundColor = UIColor.clear
 		
 		return tempLabel
 	}()
 	
-	// Collectionview 视图相关
-	let m_minLineSpace: CGFloat = 5.0
-	let m_minItemSpace: CGFloat = 5.0
-	let m_collectionTop: CGFloat = 0
-	let m_collectionLeft: CGFloat = 5
-	let m_collectionBottom: CGFloat = 0
-	let m_collectionRight: CGFloat = 5
+	/// Collectionview 视图相关
+	fileprivate let m_minLineSpace: CGFloat = 5.0
+	fileprivate let m_minItemSpace: CGFloat = 5.0
+	fileprivate let m_collectionTop: CGFloat = 0
+	fileprivate let m_collectionLeft: CGFloat = 5
+	fileprivate let m_collectionBottom: CGFloat = 0
+	fileprivate let m_collectionRight: CGFloat = 5
 	
-	// 数据相关
-	var m_fetchResult: PHFetchResult!
+	/// 数据相关
+	var m_fetchResult: PHFetchResult<PHAsset>!
     
-    lazy var m_allAssets: [PHAsset] = {
+    fileprivate lazy var m_allAssets: [PHAsset] = {
         var tempArr: [PHAsset] = []
         for i in 0 ..< self.m_fetchResult.count {
-            let asset = self.m_fetchResult[i] as! PHAsset
+            let asset = self.m_fetchResult[i]
             tempArr.append(asset)
         }
         
         return tempArr
     }()
-    
-	var m_assetGridThumbnailSize: CGSize!
 	
-	var m_isPop = true
+	/// 加载图片相关
+	fileprivate lazy var m_imageManager = PHCachingImageManager()
+	fileprivate var m_assetGridThumbnailSize: CGSize!
+	fileprivate var m_previousPreheatRect = CGRect.zero
+	
+	/// 点击返回按钮是pop出去还是进入预览
+	fileprivate var m_isPop = true
 	
     override func awakeFromNib() {
 		super.awakeFromNib()
@@ -87,18 +98,27 @@ class MyPhotoGridVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-        self.initData()
-		self.initSubViews()
+//		resetCachedAssets()
+		
+		initData()
+		initSubViews()
     }
-	
-	override func viewWillAppear(animated: Bool) {
+
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		
     }
 	
-	override func viewWillDisappear(animated: Bool) {
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		
+//		updateCachedAssets()
+	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		
-		if (self.m_isPop) {
+		if (m_isPop) {
 			MyPhotoSelectManager.defaultManager.clearData()
 		}
 	}
@@ -106,14 +126,13 @@ class MyPhotoGridVC: UIViewController {
 	override func didReceiveMemoryWarning() {
 		super.didReceiveMemoryWarning()
 		
-		print("\(self.classForCoder)内存泄露")
+		print("\(classForCoder)内存泄露")
 	}
 	
 	deinit {
-//		print("释放\(self.classForCoder)")
 	}
 	
-	override func prefersStatusBarHidden() -> Bool {
+	override var prefersStatusBarHidden : Bool {
 		return false
 	}
 
@@ -122,52 +141,53 @@ class MyPhotoGridVC: UIViewController {
 // MARK: - Initial Functions
 extension MyPhotoGridVC {
 	func initData() {
+		initWithCollectionView()
+
 		// 计算出小图大小 （ 为targetSize做准备 ）
 		let scale: CGFloat = 2.0
-		let cellSize = (self.m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
+		let cellSize = (m_collectionView.collectionViewLayout as! UICollectionViewFlowLayout).itemSize
         
-        self.m_assetGridThumbnailSize = CGSizeMake(cellSize.width*scale, cellSize.height*scale)
+        m_assetGridThumbnailSize = CGSize(width: cellSize.width*scale, height: cellSize.height*scale)
 	}
 	
 	func initSubViews() {
-		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.Plain, target: self, action:#selector(MyPhotoGridVC.cancel) )
-		self.navigationItem.rightBarButtonItem = rightBarItem
+		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(MyPhotoGridVC.cancel) )
+		navigationItem.rightBarButtonItem = rightBarItem
         
-        self.initWithCollectionView()
-        self.scrollToBottom()
+        scrollToBottom()
 						
-		self.m_toolBar.addSubview(self.m_selectedBgView)
-		self.m_toolBar.addSubview(self.m_selectedLabel)
+		m_toolBar.addSubview(m_selectedBgView)
+		m_toolBar.addSubview(m_selectedLabel)
 		
-		self.updateToolBarView()
+		updateToolBarView()
 	}
     
     func initWithCollectionView() {
-        self.m_collectionView.backgroundColor = UIColor.whiteColor()
-        self.m_collectionView.allowsMultipleSelection = true
+        m_collectionView.backgroundColor = UIColor.white
+        m_collectionView.allowsMultipleSelection = true
         
         let collectionViewFlowLayout = UICollectionViewFlowLayout()
-        collectionViewFlowLayout.minimumLineSpacing = self.m_minLineSpace
-        collectionViewFlowLayout.minimumInteritemSpacing = self.m_minItemSpace
-        collectionViewFlowLayout.sectionInset = UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
-        let width = (kScreenWidth - self.m_minItemSpace*3 - self.m_collectionLeft - self.m_collectionRight) / 4
-        collectionViewFlowLayout.itemSize = CGSizeMake(width, width)
-        self.m_collectionView.collectionViewLayout = collectionViewFlowLayout
+        collectionViewFlowLayout.minimumLineSpacing = m_minLineSpace
+        collectionViewFlowLayout.minimumInteritemSpacing = m_minItemSpace
+        collectionViewFlowLayout.sectionInset = UIEdgeInsetsMake(m_collectionTop, m_collectionLeft, m_collectionBottom, m_collectionRight)
+        let width = (kScreenWidth - m_minItemSpace*3 - m_collectionLeft - m_collectionRight) / 4
+        collectionViewFlowLayout.itemSize = CGSize(width: width, height: width)
+        m_collectionView.collectionViewLayout = collectionViewFlowLayout
     }
 	
 	func scrollToBottom() {
-		self.m_collectionView.layoutIfNeeded()
+		m_collectionView.layoutIfNeeded()
 		
-		let contentSize = self.m_collectionView.contentSize
-		let frameSize = self.m_collectionView.frame.size
+		let contentSize = m_collectionView.contentSize
+		let frameSize = m_collectionView.frame.size
 		if contentSize.height + 64 > frameSize.height {
-			self.m_collectionView.setContentOffset(CGPointMake(0, self.m_collectionView.contentSize.height - self.m_collectionView.frame.size.height + 64), animated: false)
+			m_collectionView.setContentOffset(CGPoint(x: 0, y: m_collectionView.contentSize.height - m_collectionView.frame.size.height + 64), animated: false)
 		}
 	}
 	
 	func updateToolBarView() {
-		self.showSelectLabel()
-		self.enableItems()
+		showSelectLabel()
+		enableItems()
 	}
 }
 
@@ -175,147 +195,222 @@ extension MyPhotoGridVC {
 	func enableItems() {
 		let enable = MyPhotoSelectManager.defaultManager.m_selectedItems.count > 0
 
-		self.m_preview.enabled = enable
-		self.m_done.enabled = enable
+		m_preview.isEnabled = enable
+		m_done.isEnabled = enable
 	}
 	
 	func showSelectLabel() {
-		self.m_selectedBgView.hidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
-		self.m_selectedBgView.transform = CGAffineTransformMakeScale(0.1, 0.1)
-		UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions.CurveEaseInOut, animations: {
-			self.m_selectedBgView.transform = CGAffineTransformIdentity
+		m_selectedBgView.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
+		m_selectedBgView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+		UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions(), animations: {
+			self.m_selectedBgView.transform = CGAffineTransform.identity
 			}, completion: nil)
 		
-		self.m_selectedLabel.text = "\(MyPhotoSelectManager.defaultManager.m_selectedItems.count)"
-		self.m_selectedLabel.hidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
+		m_selectedLabel.text = "\(MyPhotoSelectManager.defaultManager.m_selectedItems.count)"
+		m_selectedLabel.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
 	}
 	
 	func cancel() {
-		self.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+		navigationController?.dismiss(animated: true, completion: nil)
 	}
 	
-	@IBAction func previewClick(sender: AnyObject) {
-        let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyPhotoPreviewVC") as! MyPhotoPreviewVC
+	@IBAction func previewClick(_ sender: AnyObject) {
+        let vc = storyboard?.instantiateViewController(withIdentifier: "MyPhotoPreviewVC") as! MyPhotoPreviewVC
         
         var assets: [PHAsset] = []
         for item in MyPhotoSelectManager.defaultManager.m_selectedItems {
             assets.append(item.m_asset)
         }
         vc.m_assets = assets
-        vc.m_allAssets = self.m_allAssets
-        vc.m_firstIndexPath = NSIndexPath.init(forItem: 0, inSection: 0)
+        vc.m_allAssets = m_allAssets
+        vc.m_firstIndexPath = IndexPath.init(item: 0, section: 0)
         vc.m_delegate = self
 		
-		self.m_isPop = false
+		m_isPop = false
 		
-        self.navigationController?.pushViewController(vc, animated: true)
+        navigationController?.pushViewController(vc, animated: true)
 	}
 	
-	@IBAction func doneClick(sender: AnyObject) {
+	@IBAction func doneClick(_ sender: AnyObject) {
 		var hasVideo: Bool = false
 		
 		for item in MyPhotoSelectManager.defaultManager.m_selectedItems {
-			if (item.m_asset.mediaType == .Video) {
+			if (item.m_asset.mediaType == .video) {
 				hasVideo = true
 				break
 			}
 		}
 		
 		if hasVideo {
-			let alert = UIAlertController(title: nil, message: "您同时选中了照片和视频，视频将作为照片发送", preferredStyle: .Alert)
-			let cancelAction = UIAlertAction(title: "取消", style: .Cancel, handler: nil)
-			let doneAction = UIAlertAction(title: "确定", style: .Default, handler: { (action) in
+			let alert = UIAlertController(title: nil, message: "您同时选中了照片和视频，视频将作为照片发送", preferredStyle: .alert)
+			let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+			let doneAction = UIAlertAction(title: "确定", style: .default, handler: { (action) in
 				print(MyPhotoSelectManager.defaultManager.m_selectedItems)
-				self.dismissViewControllerAnimated(true, completion: nil)
+				self.dismiss(animated: true, completion: nil)
 			})
 			
 			alert.addAction(cancelAction)
 			alert.addAction(doneAction)
 			
-			self.presentViewController(alert, animated: true, completion: nil)
+			present(alert, animated: true, completion: nil)
 		} else {
 			print(MyPhotoSelectManager.defaultManager.m_selectedItems)
-			self.dismissViewControllerAnimated(true, completion: nil)
+			self.dismiss(animated: true, completion: nil)
 			MyPhotoSelectManager.defaultManager.clearData()
 		}
 	}
 }
 
+//extension MyPhotoGridVC: UIScrollViewDelegate {
+//	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//		updateCachedAssets()
+//	}
+//}
+
+//extension MyPhotoGridVC {
+//	
+//	fileprivate func resetCachedAssets() {
+//		m_imageManager.stopCachingImagesForAllAssets()
+//		m_previousPreheatRect = .zero
+//	}
+//	
+//	fileprivate func updateCachedAssets() {
+//		guard isViewLoaded && view.window != nil else {
+//			return
+//		}
+//		
+//		// The preheat window is twice the height of the visible rect.
+//		var preheatRect = m_collectionView.bounds
+//		preheatRect = preheatRect.insetBy(dx: 0, dy: -0.5*preheatRect.height)
+//		
+//		// Update only if the visible area is significantly different from the last preheated area.
+//		let delta = abs(preheatRect.midY - m_previousPreheatRect.midY)
+//		guard delta > m_collectionView.bounds.height / 3 else {
+//			return
+//		}
+//		
+//		// Compute the assets to start caching and to stop caching.
+//		let (addedRects, removedRects) = differencesBetweenRects(m_previousPreheatRect, preheatRect)
+//		let addedAssets = addedRects
+//			.flatMap { m_collectionView.indexPathsForElements(in: $0) }
+//			.map { m_fetchResult[$0.item] }
+//		let removedAssets = removedRects
+//			.flatMap { m_collectionView.indexPathsForElements(in: $0) }
+//			.map { m_fetchResult[$0.item] }
+//		
+//		m_imageManager.startCachingImages(for: addedAssets, targetSize: m_assetGridThumbnailSize, contentMode: .aspectFill, options: nil)
+//		m_imageManager.stopCachingImages(for: removedAssets, targetSize: m_assetGridThumbnailSize, contentMode: .aspectFill, options: nil)
+//		
+//		m_previousPreheatRect = preheatRect
+//	}
+//	
+//	fileprivate func differencesBetweenRects(_ old: CGRect, _ new: CGRect) -> (added: [CGRect], removed: [CGRect]) {
+//		if old.intersects(new) {
+//			var added = [CGRect]()
+//			if new.maxY > old.maxY {
+//				added += [CGRect(x: new.origin.x, y: old.maxY,
+//				                 width: new.width, height: new.maxY - old.maxY)]
+//			}
+//			if old.minY > new.minY {
+//				added += [CGRect(x: new.origin.x, y: new.minY,
+//				                 width: new.width, height: old.minY - new.minY)]
+//			}
+//			var removed = [CGRect]()
+//			if new.maxY < old.maxY {
+//				removed += [CGRect(x: new.origin.x, y: new.maxY,
+//				                   width: new.width, height: old.maxY - new.maxY)]
+//			}
+//			if old.minY < new.minY {
+//				removed += [CGRect(x: new.origin.x, y: old.minY,
+//				                   width: new.width, height: new.minY - old.minY)]
+//			}
+//			return (added, removed)
+//		} else {
+//			return ([new], [old])
+//		}
+//	}
+//}
+
 extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
-	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell, selected: Bool) {
+	func myPhotoGridCellButtonSelect(_ cell: MyPhotoGridCell, selected: Bool) {
 		
 		let selectedItem = MySelectedItem.init(asset: cell.m_data.m_asset, index: cell.m_data.m_index)
 		MyPhotoSelectManager.defaultManager.updateSelectItems(self, selected: selected, button: cell.m_selectButton, selectedItem: selectedItem)
-		self.updateToolBarView()
+		updateToolBarView()
 	}
 	
-	func afterChangeSelectedItem(vc: MyPhotoPreviewVC, selectedItems: [MySelectedItem], selectedIndex: [NSIndexPath]) {
+	func afterChangeSelectedItem(_ vc: MyPhotoPreviewVC, selectedItems: [MySelectedItem], selectedIndex: [IndexPath]) {
 		
-        self.m_collectionView.reloadData()
-		self.updateToolBarView()
-		self.m_isPop = true
+        m_collectionView.reloadData()
+		updateToolBarView()
+		m_isPop = true
     }
 }
 
 extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return self.m_fetchResult.count
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		return m_fetchResult.count
 	}
 	
-	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		let cell = collectionView.dequeueReusableCellWithReuseIdentifier(MyPhotoGridCell.getCellIndentifier(), forIndexPath: indexPath) as! MyPhotoGridCell
+	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MyPhotoGridCell.getCellIndentifier(), for: indexPath) as! MyPhotoGridCell
 		
 		cell.m_delegate = self
 		
-		let asset = self.m_fetchResult[indexPath.item] as! PHAsset
+		let asset = m_fetchResult[(indexPath as NSIndexPath).item] 
 		
-		cell.updateData(asset, size: self.m_assetGridThumbnailSize, indexPath: indexPath)
+		cell.updateData(asset, size: m_assetGridThumbnailSize, indexPath: indexPath)
 		
+//		cell.m_representedAssetIdentifier = asset.localIdentifier
+//
 //		let option = PHImageRequestOptions()
-//		option.resizeMode = .Fast
+//		option.resizeMode = .fast
 //		
-//		self.m_imageManager.requestImageForAsset(asset, targetSize: self.m_assetGridThumbnailSize, contentMode: PHImageContentMode.AspectFill, options: option) { (image, info) in
-//			let item = MyPhotoItem()
-//			item.updateWithData(image!, asset: asset, index: indexPath)
-//			cell.updateCellWithData(item)
+//		m_imageManager.requestImage(for: asset, targetSize: m_assetGridThumbnailSize, contentMode: PHImageContentMode.aspectFill, options: option) { (image, info) in
+//			
+//			if cell.m_representedAssetIdentifier == asset.localIdentifier {
+//				let item = MyPhotoItem()
+//				item.updateWithData(image!, asset: asset, index: indexPath)
+//				cell.updateCellWithData(item)
+//			}
 //		}
 //		
-		cell.m_selectButton.selected = MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(indexPath)
+		cell.m_selectButton.isSelected = MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(indexPath)
 
 		return cell
 	}
 	
-	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		collectionView.deselectItemAtIndexPath(indexPath, animated: true)
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		collectionView.deselectItem(at: indexPath, animated: true)
 		
-		let asset = self.m_fetchResult[indexPath.item] as! PHAsset
+		let asset = m_fetchResult[(indexPath as NSIndexPath).item] 
 
-		if (asset.mediaType == .Video) {
+		if (asset.mediaType == .video) {
 			if MyPhotoSelectManager.defaultManager.m_selectedItems.count > 0 {
-				let alert = UIAlertController(title: nil, message: "选择照片时不能预览视频", preferredStyle: .Alert)
-				let cancelAction = UIAlertAction(title: "确定", style: .Cancel, handler: nil)
+				let alert = UIAlertController(title: nil, message: "选择照片时不能预览视频", preferredStyle: .alert)
+				let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
 				alert.addAction(cancelAction)
 				
-				self.presentViewController(alert, animated: true, completion: nil)
+				present(alert, animated: true, completion: nil)
 			} else {
-				let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyVideoPreviewVC") as! MyVideoPreviewVC
+				let vc = storyboard?.instantiateViewController(withIdentifier: "MyVideoPreviewVC") as! MyVideoPreviewVC
 				
 				vc.m_asset = asset
 				
-				self.navigationController?.pushViewController(vc, animated: true)
+				navigationController?.pushViewController(vc, animated: true)
 			}
 			
 		} else {
-			let vc = self.storyboard?.instantiateViewControllerWithIdentifier("MyPhotoPreviewVC") as! MyPhotoPreviewVC
+			let vc = storyboard?.instantiateViewController(withIdentifier: "MyPhotoPreviewVC") as! MyPhotoPreviewVC
 			
-			vc.m_assets = self.m_allAssets
-			vc.m_allAssets = self.m_allAssets
+			vc.m_assets = m_allAssets
+			vc.m_allAssets = m_allAssets
 			vc.m_firstIndexPath = indexPath
 			vc.m_delegate = self
 			
-			self.m_isPop = false
+			m_isPop = false
 			
-			self.navigationController?.pushViewController(vc, animated: true)
+			navigationController?.pushViewController(vc, animated: true)
 		}
 	}
 }

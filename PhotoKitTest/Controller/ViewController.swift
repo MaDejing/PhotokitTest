@@ -21,12 +21,12 @@ class ViewController: UIViewController {
 		// Dispose of any resources that can be recreated.
 	}
 	
-	@IBAction func choosePhoto(sender: AnyObject) {
+	@IBAction func choosePhoto(_ sender: AnyObject) {
 		let sb = UIStoryboard(name: "Main", bundle: nil)
-		let vc = sb.instantiateViewControllerWithIdentifier("MyPhotoPickerVC") as! MyPhotoPickerVC
+		let vc = sb.instantiateViewController(withIdentifier: "MyPhotoPickerVC") as! MyPhotoPickerVC
 		let nav = UINavigationController(rootViewController: vc)
-		nav.navigationBar.translucent = true
-		self.presentViewController(nav, animated: true, completion: nil)
+		nav.navigationBar.isTranslucent = true
+		self.present(nav, animated: true, completion: nil)
 	}
 }
 

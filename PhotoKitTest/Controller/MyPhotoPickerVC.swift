@@ -12,9 +12,9 @@ import Photos
 
 class MyPhotoAlbumItem: NSObject {
 	var m_title: String = ""
-	var m_content: PHFetchResult!
+	var m_content: PHFetchResult<AnyObject>!
 	
-	init(title: String, content: PHFetchResult) {
+	init(title: String, content: PHFetchResult<AnyObject>) {
 		self.m_title = title;
 		self.m_content = content;
 	}
@@ -30,15 +30,15 @@ class MyPhotoPickerVC: UIViewController {
 		
 		self.title = "照片库"
 		
-		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.Plain, target: self, action:#selector(MyPhotoPickerVC.cancel) )
+		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(MyPhotoPickerVC.cancel) )
 		self.navigationItem.rightBarButtonItem = rightBarItem
 		
 		// 列出所有相册智能相册
-		let smartAlbums: PHFetchResult = PHAssetCollection.fetchAssetCollectionsWithType(.SmartAlbum, subtype: .Any, options: PHFetchOptions())
-		self.convertCollection(smartAlbums)
+		let smartAlbums: PHFetchResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: PHFetchOptions())
+		self.convertCollection(smartAlbums as! PHFetchResult<AnyObject>)
 		
-		let cloudAlbums: PHFetchResult = PHAssetCollection.fetchAssetCollectionsWithType(.Album, subtype: .Any, options: PHFetchOptions())
-		self.convertCollection(cloudAlbums)
+		let cloudAlbums: PHFetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: PHFetchOptions())
+		self.convertCollection(cloudAlbums as! PHFetchResult<AnyObject>)
 		
 //		//列出用户创建的相册
 //		let topLevelUserCollections: PHFetchResult = PHCollectionList.fetchTopLevelUserCollectionsWithOptions(nil)
@@ -50,7 +50,7 @@ class MyPhotoPickerVC: UIViewController {
 //		}
 	}
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		
 		if (self.m_firstLoad) {
@@ -69,10 +69,10 @@ class MyPhotoPickerVC: UIViewController {
 
 extension MyPhotoPickerVC {
 	func cancel() {
-		self.dismissViewControllerAnimated(true, completion: nil)
+		self.dismiss(animated: true, completion: nil)
 	}
 	
-	private func convertCollection(collection: PHFetchResult){
+	fileprivate func convertCollection(_ collection: PHFetchResult<AnyObject>){
 		for i in 0 ..< collection.count {
 			// 获取所有资源的集合，并按资源的创建时间排序
 			let resultsOptions = PHFetchOptions()
@@ -82,12 +82,12 @@ extension MyPhotoPickerVC {
 			
 			guard let c = collection[i] as? PHAssetCollection else { return }
 			
-			let assetsFetchResult: PHFetchResult = PHAsset.fetchAssetsInAssetCollection(c , options: resultsOptions)
+			let assetsFetchResult: PHFetchResult = PHAsset.fetchAssets(in: c , options: resultsOptions)
 			if assetsFetchResult.count > 0 {
-				let newAlbumItem = MyPhotoAlbumItem(title: c.localizedTitle!, content: assetsFetchResult)
+				let newAlbumItem = MyPhotoAlbumItem(title: c.localizedTitle!, content: assetsFetchResult as! PHFetchResult<AnyObject>)
 				
 				if (c.localizedTitle == "我的照片流") {
-					self.m_albums.insert(newAlbumItem, atIndex: 1)
+					self.m_albums.insert(newAlbumItem, at: 1)
 				} else {
 					self.m_albums.append(newAlbumItem)
 				}
@@ -95,12 +95,12 @@ extension MyPhotoPickerVC {
 		}
 	}
 	
-	func pushToAlbumDetail(index: Int, animated: Bool) {
+	func pushToAlbumDetail(_ index: Int, animated: Bool) {
 		let sb = UIStoryboard(name: "Main", bundle: nil)
-		let vc = sb.instantiateViewControllerWithIdentifier("MyPhotoGridVC") as! MyPhotoGridVC
+		let vc = sb.instantiateViewController(withIdentifier: "MyPhotoGridVC") as! MyPhotoGridVC
 		
 		let album = self.m_albums[index]
-		vc.m_fetchResult = album.m_content
+		vc.m_fetchResult = album.m_content as! PHFetchResult<PHAsset>!
 		vc.title = album.m_title
 		
 		self.navigationController?.pushViewController(vc, animated: animated)
@@ -108,27 +108,27 @@ extension MyPhotoPickerVC {
 }
 
 extension MyPhotoPickerVC: UITableViewDelegate, UITableViewDataSource {
-	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		return self.m_albums.count;
 	}
 	
-	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier(MyPhotoPickerCell.getCellIdentifier(), forIndexPath: indexPath) as! MyPhotoPickerCell
-		let row = indexPath.row
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		let cell = tableView.dequeueReusableCell(withIdentifier: MyPhotoPickerCell.getCellIdentifier(), for: indexPath) as! MyPhotoPickerCell
+		let row = (indexPath as NSIndexPath).row
 		let item = self.m_albums[row]
 		cell.updateRowWithData(item)
 		
 		return cell
 	}
 	
-	func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 		return MyPhotoPickerCell.getCellHeight()
 	}
 	
-	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-		tableView.deselectRowAtIndexPath(indexPath, animated: true)
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		tableView.deselectRow(at: indexPath, animated: true)
 		
-		self.pushToAlbumDetail(indexPath.row, animated: true)
+		self.pushToAlbumDetail((indexPath as NSIndexPath).row, animated: true)
 	}
 
 }

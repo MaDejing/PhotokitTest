@@ -11,7 +11,7 @@ import UIKit
 import Photos
 
 protocol MyPhotoGridCellDelegate: NSObjectProtocol {
-	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell, selected: Bool)
+	func myPhotoGridCellButtonSelect(_ cell: MyPhotoGridCell, selected: Bool)
 }
 
 class MyPhotoGridCell: UICollectionViewCell {
@@ -34,18 +34,18 @@ class MyPhotoGridCell: UICollectionViewCell {
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
-		self.m_videoView.hidden = true
+		self.m_videoView.isHidden = true
 	}
 	
 	static func getCellIndentifier() -> String {
 		return "MyPhotoGridCell"
 	}
 	
-	func updateData(asset: PHAsset, size: CGSize, indexPath: NSIndexPath) {
+	func updateData(_ asset: PHAsset, size: CGSize, indexPath: IndexPath) {
 		self.m_representedAssetIdentifier = MyPhotoImageManager.defaultManager.getAssetIndentifier(asset)
 		
 		let option = PHImageRequestOptions()
-		option.resizeMode = .Fast
+		option.resizeMode = .fast
 		
 		let imageRequestId = MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
 			if (self.m_representedAssetIdentifier == MyPhotoImageManager.defaultManager.getAssetIndentifier(asset)) {
@@ -53,7 +53,7 @@ class MyPhotoGridCell: UICollectionViewCell {
 				item.updateWithData(image, asset: asset, index: indexPath)
 				self.updateCellWithData(item)
 			} else {
-				PHImageManager.defaultManager().cancelImageRequest(self.m_imageRequestID)
+				PHImageManager.default().cancelImageRequest(self.m_imageRequestID)
 			}
 			
 			if (!isDegraded) {
@@ -62,26 +62,26 @@ class MyPhotoGridCell: UICollectionViewCell {
 		}
 				
 		if (self.m_imageRequestID != nil && imageRequestId != self.m_imageRequestID) {
-			PHImageManager.defaultManager().cancelImageRequest(self.m_imageRequestID)
+			PHImageManager.default().cancelImageRequest(self.m_imageRequestID)
 		}
 		
 		self.m_imageRequestID = imageRequestId
 	}
 	
-	func updateCellWithData(data: MyPhotoItem) {
+	func updateCellWithData(_ data: MyPhotoItem) {
 		self.m_data = data
 		
 		self.m_imageView.image = data.m_img
 		
-		self.m_videoView.hidden = !(data.m_asset.mediaType == .Video)
+		self.m_videoView.isHidden = !(data.m_asset.mediaType == .video)
 		
-		if (data.m_asset.mediaType == .Video) {
+		if (data.m_asset.mediaType == .video) {
 			let length = Int(round(data.m_asset.duration))
 			self.m_videoLength.text = self.getShowVideoLength(length)
 		}
 	}
 	
-	func getShowVideoLength(length: Int) -> String {
+	func getShowVideoLength(_ length: Int) -> String {
 		var showLength = ""
 		
 		let min = Int(length / 60)
@@ -96,11 +96,11 @@ class MyPhotoGridCell: UICollectionViewCell {
 		return showLength
 	}
 	
-	@IBAction func photoSelect(sender: AnyObject) {
+	@IBAction func photoSelect(_ sender: AnyObject) {
 		let button  = sender as! UIButton
 //		button.selected = !button.selected;
 		
-		self.m_delegate!.myPhotoGridCellButtonSelect(self, selected: button.selected)
+		self.m_delegate!.myPhotoGridCellButtonSelect(self, selected: button.isSelected)
 	}
 	
 }

@@ -11,9 +11,9 @@ import Photos
 
 class MySelectedItem: NSObject {
 	var m_asset: PHAsset!
-	var m_index: NSIndexPath!
+	var m_index: IndexPath!
 	
-	init(asset: PHAsset, index: NSIndexPath) {
+	init(asset: PHAsset, index: IndexPath) {
 		self.m_asset = asset
 		self.m_index = index
 	}
@@ -22,29 +22,29 @@ class MySelectedItem: NSObject {
 class MyPhotoSelectManager: NSObject {
 	
 	var m_selectedItems: [MySelectedItem] = []
-	var m_selectedIndex: [NSIndexPath] = []
+	var m_selectedIndex: [IndexPath] = []
 	
 	// static是延时加载的，并且是常量，加载一次后不会加载第二次，所以实现了单例。
 	static let defaultManager: MyPhotoSelectManager = MyPhotoSelectManager()
 	
-	func updateSelectItems(vcToShowAlert: UIViewController, selected: Bool, button: UIButton, selectedItem: MySelectedItem) {
+	func updateSelectItems(_ vcToShowAlert: UIViewController, selected: Bool, button: UIButton, selectedItem: MySelectedItem) {
 		if self.m_selectedItems.count >= 9 && !selected {
-			let alert = UIAlertController(title: nil, message: "最多可选择9张照片", preferredStyle: .Alert)
-			let cancelAction = UIAlertAction(title: "确定", style: .Cancel, handler: nil)
+			let alert = UIAlertController(title: nil, message: "最多可选择9张照片", preferredStyle: .alert)
+			let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
 			
 			alert.addAction(cancelAction)
 			
-			vcToShowAlert.presentViewController(alert, animated: true, completion: nil)
+			vcToShowAlert.present(alert, animated: true, completion: nil)
 		} else {
-			button.selected = !button.selected
+			button.isSelected = !button.isSelected
 						
-			if button.selected {
+			if button.isSelected {
 				self.m_selectedItems.append(selectedItem)
 			} else {
-				let index = self.m_selectedIndex.indexOf(selectedItem.m_index)
+				let index = self.m_selectedIndex.index(of: selectedItem.m_index)
 				
 				if (index != nil) {
-					self.m_selectedItems.removeAtIndex(index!)
+					self.m_selectedItems.remove(at: index!)
 				}
 			}
 			
@@ -53,7 +53,7 @@ class MyPhotoSelectManager: NSObject {
 	}
 	
 	func updateIndexArr() {
-		self.m_selectedItems.sortInPlace { (item1, item2) -> Bool in
+		self.m_selectedItems.sort { (item1, item2) -> Bool in
 			return item1.m_index.item < item2.m_index.item
 		}
 		

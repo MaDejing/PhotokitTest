@@ -32,13 +32,13 @@ class MyVideoPreviewVC: UIViewController {
 		self.initSubViews()
     }
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		
 		self.navigationController?.setNavigationBarHidden(true, animated: false)
 	}
 	
-	override func viewWillDisappear(animated: Bool) {
+	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		
 		self.navigationController?.setNavigationBarHidden(false, animated: false)
@@ -49,12 +49,12 @@ class MyVideoPreviewVC: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 	
-	override func prefersStatusBarHidden() -> Bool {
+	override var prefersStatusBarHidden : Bool {
 		return true
 	}
 	
 	deinit {
-		NSNotificationCenter.defaultCenter().removeObserver(self)
+		NotificationCenter.default.removeObserver(self)
 	}
 
 }
@@ -64,81 +64,81 @@ extension MyVideoPreviewVC {
 		self.updateTopBottomView(false)
 		self.updatePlayButton(false)
 		
-		PHImageManager.defaultManager().requestPlayerItemForVideo(self.m_asset, options: nil) { (playerItem, info) in
-			dispatch_async(dispatch_get_main_queue(), { 
+		PHImageManager.default().requestPlayerItem(forVideo: self.m_asset, options: nil) { (playerItem, info) in
+			DispatchQueue.main.async(execute: { 
 				self.m_player = AVPlayer(playerItem: playerItem!)
 				
 				let playerLayer = AVPlayerLayer(player: self.m_player)
 				playerLayer.frame = self.view.bounds
-				playerLayer.backgroundColor = UIColor.blackColor().CGColor
+				playerLayer.backgroundColor = UIColor.black.cgColor
 				self.view.layer.addSublayer(playerLayer)
 				
-				self.view.bringSubviewToFront(self.m_topView)
-				self.view.bringSubviewToFront(self.m_playButton)
-				self.view.bringSubviewToFront(self.m_bottomView)
-				self.view.bringSubviewToFront(self.m_slider)
+				self.view.bringSubview(toFront: self.m_topView)
+				self.view.bringSubview(toFront: self.m_playButton)
+				self.view.bringSubview(toFront: self.m_bottomView)
+				self.view.bringSubview(toFront: self.m_slider)
 				
 				self.updateSliderValue()
 				
-				NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MyVideoPreviewVC.pauseVideo), name: AVPlayerItemDidPlayToEndTimeNotification, object: self.m_player.currentItem)
-				self.m_player.currentItem?.addObserver(self, forKeyPath: "status", options: .New, context: nil)
+				NotificationCenter.default.addObserver(self, selector: #selector(MyVideoPreviewVC.pauseVideo), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.m_player.currentItem)
+				self.m_player.currentItem?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
 			})
 		}
 	}
 	
-	func updateTopBottomView(hidden: Bool) {
-		self.m_topView.hidden = hidden
-		self.m_bottomView.hidden = hidden
+	func updateTopBottomView(_ hidden: Bool) {
+		self.m_topView.isHidden = hidden
+		self.m_bottomView.isHidden = hidden
 	}
 	
-	func updatePlayButton(play: Bool) {
+	func updatePlayButton(_ play: Bool) {
 		let image = play ? nil : UIImage(named: "play")
-		self.m_playButton.setImage(image, forState: .Normal)
+		self.m_playButton.setImage(image, for: UIControlState())
 	}
 	
 	func updateSliderValue() {
 		// 1秒显示30帧
-		self.m_observer = self.m_player.addPeriodicTimeObserverForInterval(CMTimeMake(33, 1000), queue: dispatch_get_main_queue()) {
+		self.m_observer = self.m_player.addPeriodicTimeObserver(forInterval: CMTimeMake(33, 1000), queue: DispatchQueue.main) {
 			(time) in
 			
 			let current = CMTimeGetSeconds(time)
 			let total = CMTimeGetSeconds(self.m_player.currentItem!.duration)
 			self.m_slider.setValue(Float(current/total), animated: true)
-		}
+		} as AnyObject!
 	}
 }
 
 extension MyVideoPreviewVC {
 	
-	override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+	override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
 		if keyPath == "status" {
-			let status: AVPlayerItemStatus = AVPlayerItemStatus(rawValue: (change![NSKeyValueChangeNewKey]?.integerValue)!)!
+			let status: AVPlayerItemStatus = AVPlayerItemStatus(rawValue: ((change![NSKeyValueChangeKey.newKey] as AnyObject).intValue)!)!
 			
 			switch status {
-			case .Unknown:
+			case .unknown:
 				self.m_isReadyToPlay = false
 				print("视频资源出现未知错误")
 				break
-			case .ReadyToPlay:
+			case .readyToPlay:
 				self.m_isReadyToPlay = true
 				break
-			case .Failed:
+			case .failed:
 				self.m_isReadyToPlay = false
 				print("item 有误")
 				break
 			}
 		}
 		
-		object?.removeObserver(self, forKeyPath: "status")
+		(object as AnyObject).removeObserver(self, forKeyPath: "status")
 	}
 }
 
 extension MyVideoPreviewVC {
-	@IBAction func backClick(sender: AnyObject) {
-		self.navigationController?.popViewControllerAnimated(true)
+	@IBAction func backClick(_ sender: AnyObject) {
+		self.navigationController?.popViewController(animated: true)
 	}
 	
-	@IBAction func playClick(sender: AnyObject) {
+	@IBAction func playClick(_ sender: AnyObject) {
 		
 		if (self.m_isReadyToPlay) {
 			let curTime = self.m_player.currentItem?.currentTime()
@@ -148,7 +148,7 @@ extension MyVideoPreviewVC {
 			if (self.m_player.rate == 0.0) {
 				// 播放结束则回到0
 				if (curTime?.value == durTime?.value) {
-					self.m_player.currentItem?.seekToTime(CMTimeMake(0, 1))
+					self.m_player.currentItem?.seek(to: CMTimeMake(0, 1))
 				}
 				self.playVideo()
 			} else {
@@ -159,19 +159,19 @@ extension MyVideoPreviewVC {
 		}
 	}
 	
-	@IBAction func doneClick(sender: AnyObject) {
+	@IBAction func doneClick(_ sender: AnyObject) {
 	}
 	
-	@IBAction func sliderDown(sender: AnyObject) {
+	@IBAction func sliderDown(_ sender: AnyObject) {
 		self.m_player.removeTimeObserver(self.m_observer)
 	}
 	
-	@IBAction func sliderUp(sender: AnyObject) {
+	@IBAction func sliderUp(_ sender: AnyObject) {
 		let durTime = Float(CMTimeGetSeconds((self.m_player.currentItem?.duration)!))
 
 		let startTime = CMTimeMake(Int64(self.m_slider.value*durTime), 1)
 		
-		self.m_player.currentItem?.seekToTime(startTime, completionHandler: { (finished) in
+		self.m_player.currentItem?.seek(to: startTime, completionHandler: { (finished) in
 			if (finished) {
 				if (self.m_isReadyToPlay) {
 					if (self.m_player.rate == 0.0) {

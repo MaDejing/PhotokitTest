@@ -10,13 +10,13 @@ import UIKit
 import Photos
 
 protocol MyPhotoPreviewCellDelegate: NSObjectProtocol {
-	func afterSingleTap(cell: MyPhotoPreviewCell)
+	func afterSingleTap(_ cell: MyPhotoPreviewCell)
 }
 
 class MyPhotoPreviewCell: UICollectionViewCell {
 	
     lazy var m_actIndicator: UIActivityIndicatorView = {
-        var tempAct = UIActivityIndicatorView(activityIndicatorStyle: .WhiteLarge)
+        var tempAct = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
         
         tempAct.center = self.center
         tempAct.hidesWhenStopped = true
@@ -29,7 +29,7 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		var tempScrollView = UIScrollView(frame: self.contentView.bounds)
 		
 		tempScrollView.delegate = self
-		tempScrollView.backgroundColor = UIColor.blackColor()
+		tempScrollView.backgroundColor = UIColor.black
 		tempScrollView.maximumZoomScale = 2
 		tempScrollView.minimumZoomScale = 1
 		tempScrollView.showsVerticalScrollIndicator = false
@@ -41,8 +41,8 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 	lazy var m_imageView: UIImageView = {
 		var tempImgView = UIImageView(frame: self.m_scrollView.bounds)
 		
-		tempImgView.contentMode = .ScaleAspectFit
-		tempImgView.userInteractionEnabled = true
+		tempImgView.contentMode = .scaleAspectFit
+		tempImgView.isUserInteractionEnabled = true
 		
 		return tempImgView
 	}()
@@ -52,7 +52,7 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 	weak var m_delegate: MyPhotoPreviewCellDelegate?
     
     override func awakeFromNib() {
-        self.m_actIndicator.hidden = false
+        self.m_actIndicator.isHidden = false
         self.m_actIndicator.startAnimating()
     }
     
@@ -67,7 +67,7 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		doubleTap.numberOfTapsRequired = 2
 		doubleTap.numberOfTouchesRequired = 1
 		
-		singleTap.requireGestureRecognizerToFail(doubleTap)
+		singleTap.require(toFail: doubleTap)
 		
 		self.m_scrollView.addGestureRecognizer(singleTap)
 		self.m_scrollView.addGestureRecognizer(doubleTap)
@@ -86,11 +86,11 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		return "MyPhotoPreviewCell"
 	}
 	
-	func updateData(asset: PHAsset, size: CGSize, indexPath: NSIndexPath) {
+	func updateData(_ asset: PHAsset, size: CGSize, indexPath: IndexPath) {
 		
 		let option = PHImageRequestOptions()
-		option.deliveryMode = .HighQualityFormat
-//		option.synchronous = true
+		option.deliveryMode = .highQualityFormat
+		option.isSynchronous = true
 		
 		MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
 			let item = MyPhotoItem()
@@ -99,16 +99,16 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		}
 	}
 	
-	func updateCellWithData(data: MyPhotoItem) {
+	func updateCellWithData(_ data: MyPhotoItem) {
 		self.m_data = data
 		
 		self.m_imageView.image = data.m_img
         
         self.imageResize()
         
-        self.m_scrollView.hidden = false
+        self.m_scrollView.isHidden = false
         self.m_actIndicator.stopAnimating()
-        self.bringSubviewToFront(self.m_scrollView)
+        self.bringSubview(toFront: self.m_scrollView)
     }
 }
 
@@ -122,22 +122,22 @@ extension MyPhotoPreviewCell {
 		let imgSize = img.size
 		let widthRatio = imgSize.width / kScreenWidth
         		
-		let newSize = CGSizeMake(imgSize.width / widthRatio, imgSize.height / widthRatio)
+		let newSize = CGSize(width: imgSize.width / widthRatio, height: imgSize.height / widthRatio)
 		self.m_imageView.frame.size = newSize
         
         if (newSize.height <= self.m_scrollView.frame.size.height) {
             self.m_imageView.center = self.m_scrollView.center
         } else {
-            self.m_imageView.frame.origin = CGPointZero
+            self.m_imageView.frame.origin = CGPoint.zero
         }
         
-        self.m_scrollView.contentOffset = CGPointZero
-        self.m_scrollView.contentSize = CGSizeMake(kScreenWidth, max(kScreenHeight, self.m_imageView.frame.size.height))
+        self.m_scrollView.contentOffset = CGPoint.zero
+        self.m_scrollView.contentSize = CGSize(width: kScreenWidth, height: max(kScreenHeight, self.m_imageView.frame.size.height))
     }
     
     // 把从scrollView里截取的矩形区域缩放到整个scrollView当前可视的frame里面。获取所要放大的内容的rect，以点击点为中心。因为放大scale倍，所以截取内容宽高为scrollview的1/scale。
-    func zoomRectForScale(scale: CGFloat, center: CGPoint) -> CGRect {
-        var zoomRect: CGRect = CGRectZero
+    func zoomRectForScale(_ scale: CGFloat, center: CGPoint) -> CGRect {
+        var zoomRect: CGRect = CGRect.zero
         
         //大小
         zoomRect.size.height = self.m_scrollView.frame.size.height/scale;
@@ -151,11 +151,11 @@ extension MyPhotoPreviewCell {
 }
 
 extension MyPhotoPreviewCell {
-	func singleTap(ges: UITapGestureRecognizer) {
+	func singleTap(_ ges: UITapGestureRecognizer) {
 		self.m_delegate?.afterSingleTap(self)
 	}
 	
-	func doubleTap(ges: UITapGestureRecognizer) {
+	func doubleTap(_ ges: UITapGestureRecognizer) {
 		let newScale: CGFloat
 		
 		if self.m_scrollView.zoomScale == 1 {
@@ -164,17 +164,17 @@ extension MyPhotoPreviewCell {
 			newScale = 1
 		}
 		
-        let newRect = self.zoomRectForScale(newScale, center: ges.locationInView(self.m_imageView))
-        self.m_scrollView.zoomToRect(newRect, animated: true)
+        let newRect = self.zoomRectForScale(newScale, center: ges.location(in: self.m_imageView))
+        self.m_scrollView.zoom(to: newRect, animated: true)
 	}
 }
 
 extension MyPhotoPreviewCell: UIScrollViewDelegate {
-	func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
+	func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return self.m_imageView
 	}
 	
-	func scrollViewDidZoom(scrollView: UIScrollView) {
+	func scrollViewDidZoom(_ scrollView: UIScrollView) {
 		var xcenter = scrollView.center.x
 		var ycenter = scrollView.center.y
 		
@@ -184,7 +184,7 @@ extension MyPhotoPreviewCell: UIScrollViewDelegate {
 		
 		xcenter = contentWidthLarger ? scrollView.contentSize.width/2 : xcenter
 		ycenter = contentHeightLarger ? scrollView.contentSize.height/2 : ycenter
-		self.m_imageView.center = CGPointMake(xcenter, ycenter)
+		self.m_imageView.center = CGPoint(x: xcenter, y: ycenter)
 	}
 	
 }

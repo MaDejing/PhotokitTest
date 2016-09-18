@@ -19,7 +19,7 @@ class MyPhotoPickerCell: UITableViewCell {
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
-		self.layoutMargins = UIEdgeInsetsZero
+		self.layoutMargins = UIEdgeInsets.zero
 	}
 	
 	static func getCellHeight() -> CGFloat {
@@ -30,17 +30,17 @@ class MyPhotoPickerCell: UITableViewCell {
 		return "myPhotoPickerCell"
 	}
 	
-	func updateRowWithData(data: MyPhotoAlbumItem) {
+	func updateRowWithData(_ data: MyPhotoAlbumItem) {
 		self.m_title.text = data.m_title;
 		
 		let content = data.m_content
-		self.m_count.text = "(\(content.count))";
+		self.m_count.text = "(\(content?.count))";
 		
 		let option = PHImageRequestOptions()
-		option.resizeMode = .Fast
+		option.resizeMode = .fast
 		
-		let lastAssert = content.lastObject as! PHAsset
-		PHImageManager.defaultManager().requestImageForAsset(lastAssert, targetSize: CGSizeMake(MyPhotoPickerCell.getCellHeight(), MyPhotoPickerCell.getCellHeight()), contentMode: .AspectFill, options: option) { (image, nfo) in
+		let lastAssert = content?.lastObject as! PHAsset
+		PHImageManager.default().requestImage(for: lastAssert, targetSize: CGSize(width: MyPhotoPickerCell.getCellHeight(), height: MyPhotoPickerCell.getCellHeight()), contentMode: .aspectFill, options: option) { (image, nfo) in
 			self.m_imageView.image = image
 		}
 	}

@@ -15,19 +15,19 @@ class MyPhotoImageManager: NSObject {
 	// static是延时加载的，并且是常量，加载一次后不会加载第二次，所以实现了单例。
 	static let defaultManager: MyPhotoImageManager = MyPhotoImageManager()
 	
-	func getPhotoWithAsset(asset: PHAsset, size: CGSize, options: PHImageRequestOptions, completion: ((UIImage, [NSObject : AnyObject], Bool) -> Void)) -> PHImageRequestID {
+	func getPhotoWithAsset(_ asset: PHAsset, size: CGSize, options: PHImageRequestOptions, completion: @escaping ((UIImage, [AnyHashable: Any], Bool) -> Void)) -> PHImageRequestID {
 
 		
-		let imageRequest = PHImageManager.defaultManager().requestImageForAsset(asset, targetSize: size, contentMode: .AspectFill, options: options) { (image, info) in
+		let imageRequest = PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFill, options: options) { (image, info) in
 			
-			let isDegrade: Bool = info![PHImageResultIsDegradedKey]!.boolValue
+			let isDegrade: Bool = (info![PHImageResultIsDegradedKey]! as AnyObject).boolValue
 			completion(image!, info!, isDegrade)
 		}
 		
 		return imageRequest
 	}
 	
-	func getAssetIndentifier(asset: PHAsset) -> String {
+	func getAssetIndentifier(_ asset: PHAsset) -> String {
 		return asset.localIdentifier
 	}
 
