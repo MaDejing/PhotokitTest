@@ -192,14 +192,14 @@ extension MyPhotoGridVC {
 }
 
 extension MyPhotoGridVC {
-	func enableItems() {
+	fileprivate func enableItems() {
 		let enable = MyPhotoSelectManager.defaultManager.m_selectedItems.count > 0
 
 		m_preview.isEnabled = enable
 		m_done.isEnabled = enable
 	}
 	
-	func showSelectLabel() {
+	fileprivate func showSelectLabel() {
 		m_selectedBgView.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
 		m_selectedBgView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
 		UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions(), animations: {

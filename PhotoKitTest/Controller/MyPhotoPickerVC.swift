@@ -22,8 +22,8 @@ class MyPhotoAlbumItem: NSObject {
 
 class MyPhotoPickerVC: UIViewController {
 	
-	lazy var m_albums: [MyPhotoAlbumItem] = []
-	var m_firstLoad: Bool = true
+	fileprivate lazy var m_albums: [MyPhotoAlbumItem] = []
+	fileprivate var m_firstLoad: Bool = true
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -95,7 +95,7 @@ extension MyPhotoPickerVC {
 		}
 	}
 	
-	func pushToAlbumDetail(_ index: Int, animated: Bool) {
+	fileprivate func pushToAlbumDetail(_ index: Int, animated: Bool) {
 		let sb = UIStoryboard(name: "Main", bundle: nil)
 		let vc = sb.instantiateViewController(withIdentifier: "MyPhotoGridVC") as! MyPhotoGridVC
 		

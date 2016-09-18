@@ -38,7 +38,7 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		return tempScrollView
 	}()
 	
-	lazy var m_imageView: UIImageView = {
+	fileprivate lazy var m_imageView: UIImageView = {
 		var tempImgView = UIImageView(frame: self.m_scrollView.bounds)
 		
 		tempImgView.contentMode = .scaleAspectFit
@@ -47,7 +47,7 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		return tempImgView
 	}()
 	
-	var m_data: MyPhotoItem!
+	fileprivate var m_data: MyPhotoItem!
 	
 	weak var m_delegate: MyPhotoPreviewCellDelegate?
     
@@ -136,7 +136,7 @@ extension MyPhotoPreviewCell {
     }
     
     // 把从scrollView里截取的矩形区域缩放到整个scrollView当前可视的frame里面。获取所要放大的内容的rect，以点击点为中心。因为放大scale倍，所以截取内容宽高为scrollview的1/scale。
-    func zoomRectForScale(_ scale: CGFloat, center: CGPoint) -> CGRect {
+    fileprivate func zoomRectForScale(_ scale: CGFloat, center: CGPoint) -> CGRect {
         var zoomRect: CGRect = CGRect.zero
         
         //大小
