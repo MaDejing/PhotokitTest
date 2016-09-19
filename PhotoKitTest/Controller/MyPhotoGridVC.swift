@@ -243,7 +243,7 @@ extension MyPhotoGridVC {
 		}
 		
 		if hasVideo {
-			let alert = UIAlertController(title: nil, message: "您同时选中了照片和视频，视频将作为照片发送", preferredStyle: .alert)
+			let alert = UIAlertController(title: "视频将作为照片发送", message: "如需发送视频，请取消所有选择，点击视频进入视频预览进行发送", preferredStyle: .alert)
 			let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
 			let doneAction = UIAlertAction(title: "确定", style: .default, handler: { (action) in
 				print(MyPhotoSelectManager.defaultManager.m_selectedItems)
@@ -304,7 +304,7 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 
 		if (asset.mediaType == .video) {
 			if MyPhotoSelectManager.defaultManager.m_selectedItems.count > 0 {
-				let alert = UIAlertController(title: nil, message: "选择照片时不能预览视频", preferredStyle: .alert)
+				let alert = UIAlertController(title: nil, message: "选择多项时不能预览单个视频", preferredStyle: .alert)
 				let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
 				alert.addAction(cancelAction)
 				

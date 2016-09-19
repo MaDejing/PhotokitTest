@@ -507,7 +507,7 @@
                                             <constraint firstAttribute="width" constant="50" id="k5Z-ao-gLv"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <state key="normal" title="确定">
+                                        <state key="normal" title="完成">
                                             <color key="titleColor" red="0.1215686275" green="0.71764705880000002" blue="0.1058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <state key="disabled">
