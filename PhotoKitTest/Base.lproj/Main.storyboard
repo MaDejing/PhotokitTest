@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -174,12 +175,21 @@
                                                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="video_white" translatesAutoresizingMaskIntoConstraints="NO" id="uaH-zq-dwC">
+                                                            <constraints>
+                                                                <constraint firstAttribute="height" constant="13" id="fx1-rN-3sa"/>
+                                                                <constraint firstAttribute="width" secondItem="uaH-zq-dwC" secondAttribute="height" multiplier="1:1" id="kXp-2c-MX0"/>
+                                                            </constraints>
+                                                        </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstItem="v5t-QA-Bbb" firstAttribute="centerY" secondItem="EqC-Q1-2Nc" secondAttribute="centerY" id="61S-gd-xRA"/>
                                                         <constraint firstAttribute="height" constant="17" id="C4C-AJ-1be"/>
+                                                        <constraint firstItem="uaH-zq-dwC" firstAttribute="top" secondItem="EqC-Q1-2Nc" secondAttribute="top" constant="2" id="DXi-Mi-Yzm"/>
+                                                        <constraint firstItem="uaH-zq-dwC" firstAttribute="leading" secondItem="EqC-Q1-2Nc" secondAttribute="leading" constant="5" id="FLD-dC-eeF"/>
                                                         <constraint firstAttribute="trailing" secondItem="v5t-QA-Bbb" secondAttribute="trailing" constant="6" id="nnc-Yt-UOh"/>
+                                                        <constraint firstItem="uaH-zq-dwC" firstAttribute="centerY" secondItem="EqC-Q1-2Nc" secondAttribute="centerY" id="xsQ-I1-v9m"/>
                                                     </constraints>
                                                 </view>
                                             </subviews>
@@ -359,7 +369,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kiN-ZV-f0E">
                                         <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="12"/>
                                         <state key="normal" title="原图" image="unselected">
-                                            <color key="titleColor" red="0.50196081400000003" green="0.50196081400000003" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleColor" red="0.55294117647058827" green="0.55294117647058827" blue="0.55294117647058827" alpha="1" colorSpace="calibratedRGB"/>
                                         </state>
                                         <state key="selected" image="selected">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -377,7 +387,7 @@
                                             <color key="titleColor" red="0.1215686275" green="0.71764705880000002" blue="0.1058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <state key="disabled">
-                                            <color key="titleColor" red="0.55429422855377197" green="0.55429422855377197" blue="0.55429422855377197" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="titleColor" red="0.55294117647058827" green="0.55294117647058827" blue="0.55294117647058827" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <connections>
                                             <action selector="m_doneClick:" destination="BLw-Kk-4gM" eventType="touchUpInside" id="xsO-dy-Muz"/>
@@ -507,20 +517,11 @@
                                             <action selector="doneClick:" destination="gB3-BL-Hfe" eventType="touchUpInside" id="RrV-yO-qSu"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="74d-jt-zTx">
-                                        <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="12"/>
-                                        <state key="normal" title="原图" image="unselected">
-                                            <color key="titleColor" red="0.50196081400000003" green="0.50196081400000003" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
-                                        </state>
-                                        <state key="selected" image="selected"/>
-                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="0.69999999999999996" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="aSl-bU-JNm" secondAttribute="trailing" constant="28" id="FvW-wq-u3W"/>
-                                    <constraint firstItem="74d-jt-zTx" firstAttribute="leading" secondItem="B3d-SH-KIJ" secondAttribute="leading" constant="10" id="JyE-xl-KgA"/>
                                     <constraint firstItem="aSl-bU-JNm" firstAttribute="centerY" secondItem="B3d-SH-KIJ" secondAttribute="centerY" id="LpQ-1R-XlZ"/>
-                                    <constraint firstItem="74d-jt-zTx" firstAttribute="centerY" secondItem="B3d-SH-KIJ" secondAttribute="centerY" id="e8e-qo-37o"/>
                                     <constraint firstAttribute="height" constant="44" id="l7G-wM-FCv"/>
                                     <constraint firstAttribute="trailing" secondItem="aSl-bU-JNm" secondAttribute="trailing" constant="15" id="wdK-yB-2pX"/>
                                 </constraints>
@@ -592,5 +593,6 @@
         <image name="play" width="100" height="100"/>
         <image name="selected" width="30" height="30"/>
         <image name="unselected" width="30" height="30"/>
+        <image name="video_white" width="32" height="32"/>
     </resources>
 </document>
