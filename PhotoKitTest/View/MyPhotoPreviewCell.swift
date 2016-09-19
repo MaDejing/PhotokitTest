@@ -59,11 +59,11 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		
-		let singleTap = UITapGestureRecognizer(target: self, action: #selector(MyPhotoPreviewCell.singleTap(_:)))
+		let singleTap = UITapGestureRecognizer(target: self, action: #selector(self.singleTap))
 		singleTap.numberOfTapsRequired = 1
 		singleTap.numberOfTouchesRequired = 1
 		
-		let doubleTap = UITapGestureRecognizer(target: self, action: #selector(MyPhotoPreviewCell.doubleTap(_:)))
+		let doubleTap = UITapGestureRecognizer(target: self, action: #selector(self.doubleTap))
 		doubleTap.numberOfTapsRequired = 2
 		doubleTap.numberOfTouchesRequired = 1
 		
@@ -89,8 +89,15 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 	func updateData(_ asset: PHAsset, size: CGSize, indexPath: IndexPath) {
 		
 		let option = PHImageRequestOptions()
-		option.deliveryMode = .highQualityFormat
+		option.deliveryMode = .opportunistic
 		option.isSynchronous = true
+		option.progressHandler = { progress, _, _, _ in
+			DispatchQueue.main.sync {
+				self.m_scrollView.isHidden = true
+				self.m_actIndicator.startAnimating()
+				self.bringSubview(toFront: self.m_actIndicator)
+			}
+		}
 		
 		let _ = MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
 			let item = MyPhotoItem()
@@ -164,7 +171,7 @@ extension MyPhotoPreviewCell {
 			newScale = 1
 		}
 		
-        let newRect = self.zoomRectForScale(newScale, center: ges.location(in: self.m_imageView))
+		let newRect = self.zoomRectForScale(newScale, center: ges.location(in: self.m_imageView))
         self.m_scrollView.zoom(to: newRect, animated: true)
 	}
 }

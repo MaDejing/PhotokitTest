@@ -15,13 +15,16 @@ class MyPhotoImageManager: NSObject {
 	// static是延时加载的，并且是常量，加载一次后不会加载第二次，所以实现了单例。
 	static let defaultManager: MyPhotoImageManager = MyPhotoImageManager()
 	
+	var m_isAllowOrigin: Bool = false
+	
 	func getPhotoWithAsset(_ asset: PHAsset, size: CGSize, options: PHImageRequestOptions, completion: @escaping ((UIImage, [AnyHashable: Any], Bool) -> Void)) -> PHImageRequestID {
 
-		
-		let imageRequest = PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFill, options: options) { (image, info) in
+		let imageRequest = PHImageManager.default().requestImage(for: asset, targetSize: size, contentMode: .aspectFill, options: options) { (img, info) in
+			
+			guard let image = img else { return }
 			
 			let isDegrade: Bool = (info![PHImageResultIsDegradedKey]! as AnyObject).boolValue
-			completion(image!, info!, isDegrade)
+			completion(image, info!, isDegrade)
 		}
 		
 		return imageRequest

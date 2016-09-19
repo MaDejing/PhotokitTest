@@ -73,15 +73,7 @@ class MyPhotoGridVC: UIViewController {
 	/// 数据相关
 	var m_fetchResult: PHFetchResult<PHAsset>!
     
-    fileprivate lazy var m_allAssets: [PHAsset] = {
-        var tempArr: [PHAsset] = []
-        for i in 0 ..< self.m_fetchResult.count {
-            let asset = self.m_fetchResult[i]
-            tempArr.append(asset)
-        }
-        
-        return tempArr
-    }()
+    fileprivate var m_allAssets: [PHAsset]! = []
 	
 	/// 加载图片相关
 	fileprivate lazy var m_imageManager = PHCachingImageManager()
@@ -98,7 +90,7 @@ class MyPhotoGridVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-//		resetCachedAssets()
+		PHPhotoLibrary.shared().register(self)
 		
 		initData()
 		initSubViews()
@@ -111,8 +103,6 @@ class MyPhotoGridVC: UIViewController {
 	
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-		
-//		updateCachedAssets()
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -130,6 +120,7 @@ class MyPhotoGridVC: UIViewController {
 	}
 	
 	deinit {
+		PHPhotoLibrary.shared().unregisterChangeObserver(self)
 	}
 	
 	override var prefersStatusBarHidden : Bool {
@@ -141,6 +132,7 @@ class MyPhotoGridVC: UIViewController {
 // MARK: - Initial Functions
 extension MyPhotoGridVC {
 	func initData() {
+		updateAllAssets()
 		initWithCollectionView()
 
 		// 计算出小图大小 （ 为targetSize做准备 ）
@@ -150,8 +142,17 @@ extension MyPhotoGridVC {
         m_assetGridThumbnailSize = CGSize(width: cellSize.width*scale, height: cellSize.height*scale)
 	}
 	
+	func updateAllAssets() {
+		m_allAssets.removeAll()
+		
+		for i in 0 ..< self.m_fetchResult.count {
+			let asset = self.m_fetchResult[i]
+			m_allAssets.append(asset)
+		}
+	}
+	
 	func initSubViews() {
-		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(MyPhotoGridVC.cancel) )
+		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(self.cancel))
 		navigationItem.rightBarButtonItem = rightBarItem
         
         scrollToBottom()
@@ -261,76 +262,6 @@ extension MyPhotoGridVC {
 	}
 }
 
-//extension MyPhotoGridVC: UIScrollViewDelegate {
-//	func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//		updateCachedAssets()
-//	}
-//}
-
-//extension MyPhotoGridVC {
-//	
-//	fileprivate func resetCachedAssets() {
-//		m_imageManager.stopCachingImagesForAllAssets()
-//		m_previousPreheatRect = .zero
-//	}
-//	
-//	fileprivate func updateCachedAssets() {
-//		guard isViewLoaded && view.window != nil else {
-//			return
-//		}
-//		
-//		// The preheat window is twice the height of the visible rect.
-//		var preheatRect = m_collectionView.bounds
-//		preheatRect = preheatRect.insetBy(dx: 0, dy: -0.5*preheatRect.height)
-//		
-//		// Update only if the visible area is significantly different from the last preheated area.
-//		let delta = abs(preheatRect.midY - m_previousPreheatRect.midY)
-//		guard delta > m_collectionView.bounds.height / 3 else {
-//			return
-//		}
-//		
-//		// Compute the assets to start caching and to stop caching.
-//		let (addedRects, removedRects) = differencesBetweenRects(m_previousPreheatRect, preheatRect)
-//		let addedAssets = addedRects
-//			.flatMap { m_collectionView.indexPathsForElements(in: $0) }
-//			.map { m_fetchResult[$0.item] }
-//		let removedAssets = removedRects
-//			.flatMap { m_collectionView.indexPathsForElements(in: $0) }
-//			.map { m_fetchResult[$0.item] }
-//		
-//		m_imageManager.startCachingImages(for: addedAssets, targetSize: m_assetGridThumbnailSize, contentMode: .aspectFill, options: nil)
-//		m_imageManager.stopCachingImages(for: removedAssets, targetSize: m_assetGridThumbnailSize, contentMode: .aspectFill, options: nil)
-//		
-//		m_previousPreheatRect = preheatRect
-//	}
-//	
-//	fileprivate func differencesBetweenRects(_ old: CGRect, _ new: CGRect) -> (added: [CGRect], removed: [CGRect]) {
-//		if old.intersects(new) {
-//			var added = [CGRect]()
-//			if new.maxY > old.maxY {
-//				added += [CGRect(x: new.origin.x, y: old.maxY,
-//				                 width: new.width, height: new.maxY - old.maxY)]
-//			}
-//			if old.minY > new.minY {
-//				added += [CGRect(x: new.origin.x, y: new.minY,
-//				                 width: new.width, height: old.minY - new.minY)]
-//			}
-//			var removed = [CGRect]()
-//			if new.maxY < old.maxY {
-//				removed += [CGRect(x: new.origin.x, y: new.maxY,
-//				                   width: new.width, height: old.maxY - new.maxY)]
-//			}
-//			if old.minY < new.minY {
-//				removed += [CGRect(x: new.origin.x, y: old.minY,
-//				                   width: new.width, height: new.minY - old.minY)]
-//			}
-//			return (added, removed)
-//		} else {
-//			return ([new], [old])
-//		}
-//	}
-//}
-
 extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
 	func myPhotoGridCellButtonSelect(_ cell: MyPhotoGridCell, selected: Bool) {
 		
@@ -339,7 +270,7 @@ extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
 		updateToolBarView()
 	}
 	
-	func afterChangeSelectedItem(_ vc: MyPhotoPreviewVC, selectedItems: [MySelectedItem], selectedIndex: [IndexPath]) {
+	func afterChangeSelectedItem(_ vc: MyPhotoPreviewVC) {
 		
         m_collectionView.reloadData()
 		updateToolBarView()
@@ -357,24 +288,10 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 		
 		cell.m_delegate = self
 		
-		let asset = m_fetchResult[(indexPath as NSIndexPath).item] 
+		let asset = m_fetchResult[indexPath.item]
 		
 		cell.updateData(asset, size: m_assetGridThumbnailSize, indexPath: indexPath)
 		
-//		cell.m_representedAssetIdentifier = asset.localIdentifier
-//
-//		let option = PHImageRequestOptions()
-//		option.resizeMode = .fast
-//		
-//		m_imageManager.requestImage(for: asset, targetSize: m_assetGridThumbnailSize, contentMode: PHImageContentMode.aspectFill, options: option) { (image, info) in
-//			
-//			if cell.m_representedAssetIdentifier == asset.localIdentifier {
-//				let item = MyPhotoItem()
-//				item.updateWithData(image!, asset: asset, index: indexPath)
-//				cell.updateCellWithData(item)
-//			}
-//		}
-//		
 		cell.m_selectButton.isSelected = MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(indexPath)
 
 		return cell
@@ -383,7 +300,7 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		collectionView.deselectItem(at: indexPath, animated: true)
 		
-		let asset = m_fetchResult[(indexPath as NSIndexPath).item] 
+		let asset = m_fetchResult[indexPath.item]
 
 		if (asset.mediaType == .video) {
 			if MyPhotoSelectManager.defaultManager.m_selectedItems.count > 0 {
@@ -411,6 +328,44 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 			m_isPop = false
 			
 			navigationController?.pushViewController(vc, animated: true)
+		}
+	}
+}
+
+extension MyPhotoGridVC: PHPhotoLibraryChangeObserver {
+	
+	func photoLibraryDidChange(_ changeInstance: PHChange) {
+		guard let changes = changeInstance.changeDetails(for: m_fetchResult) else { return }
+		
+		DispatchQueue.main.sync {
+			m_fetchResult = changes.fetchResultAfterChanges
+			updateAllAssets()
+			
+//			if changes.hasIncrementalChanges {
+//				// If we have incremental diffs, animate them in the collection view.
+//				guard let collectionView = self.m_collectionView else { fatalError() }
+//				collectionView.performBatchUpdates({
+//					// For indexes to make sense, updates must be in this order:
+//					// delete, insert, reload, move
+//					if let removed = changes.removedIndexes, removed.count > 0 {
+//						collectionView.deleteItems(at: removed.map({ IndexPath(item: $0, section: 0) }))
+//					}
+//					if let inserted = changes.insertedIndexes, inserted.count > 0 {
+//						collectionView.insertItems(at: inserted.map({ IndexPath(item: $0, section: 0) }))
+//					}
+//					if let changed = changes.changedIndexes, changed.count > 0 {
+//						collectionView.reloadItems(at: changed.map({ IndexPath(item: $0, section: 0) }))
+//					}
+//					changes.enumerateMoves { fromIndex, toIndex in
+//						collectionView.moveItem(at: IndexPath(item: fromIndex, section: 0),
+//						                        to: IndexPath(item: toIndex, section: 0))
+//					}
+//				})
+//			} else {
+				// Reload the collection view if incremental diffs are not available.
+				m_collectionView!.reloadData()
+//			}
+			
 		}
 	}
 }

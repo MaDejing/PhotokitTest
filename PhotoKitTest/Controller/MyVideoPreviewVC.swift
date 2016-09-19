@@ -80,7 +80,7 @@ extension MyVideoPreviewVC {
 				
 				self.updateSliderValue()
 				
-				NotificationCenter.default.addObserver(self, selector: #selector(MyVideoPreviewVC.pauseVideo), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.m_player.currentItem)
+				NotificationCenter.default.addObserver(self, selector: #selector(self.pauseVideo), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.m_player.currentItem)
 				self.m_player.currentItem?.addObserver(self, forKeyPath: "status", options: .new, context: nil)
 			})
 		}

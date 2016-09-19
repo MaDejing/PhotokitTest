@@ -22,23 +22,30 @@ class MyPhotoAlbumItem: NSObject {
 
 class MyPhotoPickerVC: UIViewController {
 	
+	@IBOutlet weak var m_tableView: UITableView!
+	
 	fileprivate lazy var m_albums: [MyPhotoAlbumItem] = []
 	fileprivate var m_firstLoad: Bool = true
+	
+	var m_smartAlbums: PHFetchResult<PHAssetCollection>!
+	var m_cloudAlbums: PHFetchResult<PHAssetCollection>!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
 		self.title = "照片库"
 		
-		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(MyPhotoPickerVC.cancel) )
+		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(self.cancel) )
 		self.navigationItem.rightBarButtonItem = rightBarItem
 		
 		// 列出所有相册智能相册
-		let smartAlbums: PHFetchResult = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: PHFetchOptions())
-		self.convertCollection(smartAlbums as! PHFetchResult<AnyObject>)
+		m_smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: PHFetchOptions())
+		self.convertCollection(m_smartAlbums)
 		
-		let cloudAlbums: PHFetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: PHFetchOptions())
-		self.convertCollection(cloudAlbums as! PHFetchResult<AnyObject>)
+		m_cloudAlbums = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: PHFetchOptions())
+		self.convertCollection(m_cloudAlbums)
+		
+		PHPhotoLibrary.shared().register(self)
 		
 //		//列出用户创建的相册
 //		let topLevelUserCollections: PHFetchResult = PHCollectionList.fetchTopLevelUserCollectionsWithOptions(nil)
@@ -65,6 +72,10 @@ class MyPhotoPickerVC: UIViewController {
 		// Dispose of any resources that can be recreated.
 	}
 	
+	deinit {
+		PHPhotoLibrary.shared().unregisterChangeObserver(self)
+	}
+	
 }
 
 extension MyPhotoPickerVC {
@@ -72,7 +83,7 @@ extension MyPhotoPickerVC {
 		self.dismiss(animated: true, completion: nil)
 	}
 	
-	fileprivate func convertCollection(_ collection: PHFetchResult<AnyObject>){
+	fileprivate func convertCollection(_ collection: PHFetchResult<PHAssetCollection>) {
 		for i in 0 ..< collection.count {
 			// 获取所有资源的集合，并按资源的创建时间排序
 			let resultsOptions = PHFetchOptions()
@@ -80,9 +91,9 @@ extension MyPhotoPickerVC {
 			resultsOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
 			//			resultsOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.Image.rawValue)
 			
-			guard let c = collection[i] as? PHAssetCollection else { return }
+			let c = collection[i]
 			
-			let assetsFetchResult: PHFetchResult = PHAsset.fetchAssets(in: c , options: resultsOptions)
+			let assetsFetchResult: PHFetchResult = PHAsset.fetchAssets(in: c, options: resultsOptions)
 			if assetsFetchResult.count > 0 {
 				let newAlbumItem = MyPhotoAlbumItem(title: c.localizedTitle!, content: assetsFetchResult as! PHFetchResult<AnyObject>)
 				
@@ -130,7 +141,63 @@ extension MyPhotoPickerVC: UITableViewDelegate, UITableViewDataSource {
 		
 		self.pushToAlbumDetail((indexPath as NSIndexPath).row, animated: true)
 	}
+}
 
+extension MyPhotoPickerVC: PHPhotoLibraryChangeObserver {
+	
+	func photoLibraryDidChange(_ changeInstance: PHChange) {
+		DispatchQueue.main.sync {
+			var assetChanged = false
+
+//			let changeDetailsSmart: PHFetchResultChangeDetails! = changeInstance.changeDetails(for: m_smartAlbums)
+			if let changeDetailsSmart = changeInstance.changeDetails(for: m_smartAlbums) {
+				assetChanged = true
+				m_smartAlbums = changeDetailsSmart.fetchResultAfterChanges
+			}
+			
+//			let changeDetailsAlbums: PHFetchResultChangeDetails! = changeInstance.changeDetails(for: m_cloudAlbums)
+			if let changeDetailsAlbums = changeInstance.changeDetails(for: m_cloudAlbums) {
+				assetChanged = true
+				m_cloudAlbums = changeDetailsAlbums.fetchResultAfterChanges
+			}
+			
+			if !assetChanged {
+				for i in 0 ..< m_smartAlbums.count {
+					let resultsOptions = PHFetchOptions()
+					resultsOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+					
+					let assetsFetchResult: PHFetchResult = PHAsset.fetchAssets(in: m_smartAlbums[i], options: resultsOptions)
+					
+					if let _ = changeInstance.changeDetails(for: assetsFetchResult) {
+						assetChanged = true
+						break
+					}
+				}
+			}
+
+			if !assetChanged {
+				for i in 0 ..< m_cloudAlbums.count {
+					let resultsOptions = PHFetchOptions()
+					resultsOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+					
+					let assetsFetchResult: PHFetchResult = PHAsset.fetchAssets(in: m_cloudAlbums[i], options: resultsOptions)
+					
+					if let _ = changeInstance.changeDetails(for: assetsFetchResult) {
+						assetChanged = true
+						break
+					}
+				}
+			}
+			
+			if assetChanged {
+				m_albums.removeAll()
+				convertCollection(m_smartAlbums)
+				convertCollection(m_cloudAlbums)
+				m_tableView.reloadData()
+			}
+			
+		}
+	}
 }
 
 
