@@ -242,7 +242,18 @@ extension MyVideoPreviewVC {
 extension MyVideoPreviewVC: PHPhotoLibraryChangeObserver {
 	
 	func photoLibraryDidChange(_ changeInstance: PHChange) {
+		guard let details = changeInstance.changeDetails(for: m_asset) else { return }
 		
+		DispatchQueue.main.sync {
+			if details.objectWasDeleted {
+				let alert = UIAlertController.init(title: "您之前预览的视频已被删除", message: "", preferredStyle: .alert)
+				alert.addAction(UIAlertAction(title: "确定", style: .cancel, handler: { (alertAction) in
+					_ = self.navigationController?.popViewController(animated: true)
+				}))
+				
+				present(alert, animated: true, completion: nil)
+			}
+		}
 	}
 }
 
