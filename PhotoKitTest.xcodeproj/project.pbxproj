@@ -13,6 +13,7 @@
 		CF8CCE9E1D76CF1200375F44 /* PhotoKitTestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCE9D1D76CF1200375F44 /* PhotoKitTestTests.swift */; };
 		CF8CCEA91D76CF1200375F44 /* PhotoKitTestUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8CCEA81D76CF1200375F44 /* PhotoKitTestUITests.swift */; };
 		CF8FDC801D80FC6E00C34B69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CF8FDC7E1D80FC6E00C34B69 /* Main.storyboard */; };
+		CFDB59801D90D2E8005B5F90 /* GlobalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFDB597F1D90D2E8005B5F90 /* GlobalData.swift */; };
 		CFF800011D8903E7006DDDA5 /* MyPhotoGridVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFF51D8903E7006DDDA5 /* MyPhotoGridVC.swift */; };
 		CFF800021D8903E7006DDDA5 /* MyPhotoPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFF61D8903E7006DDDA5 /* MyPhotoPickerVC.swift */; };
 		CFF800031D8903E7006DDDA5 /* MyPhotoPreviewVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF8FFF71D8903E7006DDDA5 /* MyPhotoPreviewVC.swift */; };
@@ -55,6 +56,7 @@
 		CF8CCEA81D76CF1200375F44 /* PhotoKitTestUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoKitTestUITests.swift; sourceTree = "<group>"; };
 		CF8CCEAA1D76CF1200375F44 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CF8FDC7F1D80FC6E00C34B69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		CFDB597F1D90D2E8005B5F90 /* GlobalData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalData.swift; sourceTree = "<group>"; };
 		CFF800001D8903E7006DDDA5 /* MyPhotoPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoPreviewCell.swift; sourceTree = "<group>"; };
 		CFF800221D8E2D1C006DDDA5 /* MyPhotoImageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoImageManager.swift; sourceTree = "<group>"; };
 		CFF8FFF51D8903E7006DDDA5 /* MyPhotoGridVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyPhotoGridVC.swift; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 		CFF8FFFA1D8903E7006DDDA5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				CFDB597F1D90D2E8005B5F90 /* GlobalData.swift */,
 				CFF800221D8E2D1C006DDDA5 /* MyPhotoImageManager.swift */,
 				CFF8FFFC1D8903E7006DDDA5 /* MyPhotoSelectManager.swift */,
 			);
@@ -311,6 +314,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CFDB59801D90D2E8005B5F90 /* GlobalData.swift in Sources */,
 				CFF800071D8903E7006DDDA5 /* MyPhotoSelectManager.swift in Sources */,
 				CFF800051D8903E7006DDDA5 /* ViewController.swift in Sources */,
 				CFF800031D8903E7006DDDA5 /* MyPhotoPreviewVC.swift in Sources */,

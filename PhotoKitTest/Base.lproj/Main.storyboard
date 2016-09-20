@@ -227,7 +227,7 @@
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="lUH-0g-XjH"/>
-                                    <barButtonItem title="完成" style="plain" id="NF7-GT-Vwj">
+                                    <barButtonItem title="发送" style="plain" id="NF7-GT-Vwj">
                                         <color key="tintColor" red="0.1215686275" green="0.71764705880000002" blue="0.1058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <connections>
                                             <action selector="doneClick:" destination="4Cn-tx-iqN" id="5RP-uF-3HT"/>
@@ -507,7 +507,7 @@
                                             <constraint firstAttribute="width" constant="50" id="k5Z-ao-gLv"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <state key="normal" title="完成">
+                                        <state key="normal" title="发送">
                                             <color key="titleColor" red="0.1215686275" green="0.71764705880000002" blue="0.1058823529" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
                                         <state key="disabled">

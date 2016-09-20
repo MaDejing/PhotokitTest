@@ -26,7 +26,7 @@ class ViewController: UIViewController {
 		let vc = sb.instantiateViewController(withIdentifier: "MyPhotoPickerVC") as! MyPhotoPickerVC
 		let nav = UINavigationController(rootViewController: vc)
 		nav.navigationBar.isTranslucent = true
-		self.present(nav, animated: true, completion: nil)
+		present(nav, animated: true, completion: nil)
 	}
 }
 

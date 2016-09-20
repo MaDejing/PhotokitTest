@@ -32,21 +32,21 @@ class MyPhotoPreviewVC: UIViewController {
     let m_collectionLeft: CGFloat = 0
     let m_collectionBottom: CGFloat = 0
     let m_collectionRight: CGFloat = 0
-    
-    let m_selectedLabelWidth: CGFloat = 30
-    
-    lazy var m_selectedBgView: UIView = {
-        var tempBgView = UIView.init(frame: CGRect(x: kScreenWidth-84, y: (44-self.m_selectedLabelWidth)/2, width: self.m_selectedLabelWidth, height: self.m_selectedLabelWidth))
-        tempBgView.backgroundColor = UIColor(red: 31/255.0, green: 183/255.0, blue: 27/255.0, alpha: 1)
-        tempBgView.layer.cornerRadius = 15
+	
+    fileprivate lazy var m_selectedBgView: UIView = {
+        var tempBgView = UIView.init(frame: CGRect(x: kScreenWidth-84, y: (44-kSelectedLabelWidth)/2, width: kSelectedLabelWidth, height: kSelectedLabelWidth))
+        tempBgView.backgroundColor = kThemeColor
+        tempBgView.layer.cornerRadius = kSelectedLabelWidth / 2
         tempBgView.layer.masksToBounds = true
         
         return tempBgView
     }()
     
-    lazy var m_selectedLabel: UILabel = {
-        var tempLabel = UILabel.init(frame: CGRect(x: kScreenWidth-84, y: (44-self.m_selectedLabelWidth)/2, width: self.m_selectedLabelWidth, height: self.m_selectedLabelWidth))
-        tempLabel.font = UIFont(name: "PingFang-SC-Regular", size: 15)
+    fileprivate lazy var m_selectedLabel: UILabel = {
+        var tempLabel = UILabel.init()
+		
+		tempLabel.frame = self.m_selectedBgView.frame
+        tempLabel.font = kSelectedLabelFont
         tempLabel.textColor = UIColor.white
         tempLabel.textAlignment = .center
         tempLabel.backgroundColor = UIColor.clear
@@ -181,12 +181,16 @@ extension MyPhotoPreviewVC {
 		m_originLabel.isHidden = true
 		if (MyPhotoImageManager.defaultManager.m_isAllowOrigin) {
 			m_originActIndicator.startAnimating()
+			
 			PHImageManager.default().requestImageData(for: m_allAssets[assetIndex], options: nil) { (imageData, _, _, _) in
 				
 				let byteStr = self.getBytesFromDataLength((imageData?.count)!)
-				self.m_originLabel.text = byteStr
-				self.m_originLabel.isHidden = false
-				self.m_originActIndicator.stopAnimating()
+				
+				DispatchQueue.main.asyncAfter(deadline: .now()+0.15, execute: {
+					self.m_originLabel.text = byteStr
+					self.m_originActIndicator.stopAnimating()
+					self.m_originLabel.isHidden = false
+				})
 			}
 		} else {
 			m_originActIndicator.stopAnimating()
@@ -234,20 +238,18 @@ extension MyPhotoPreviewVC {
 			let alert = UIAlertController(title: nil, message: "您同时选中了照片和视频，视频将作为照片发送", preferredStyle: .alert)
 			let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
 			let doneAction = UIAlertAction(title: "确定", style: .default, handler: { (action) in
-				print(MyPhotoSelectManager.defaultManager.m_selectedItems)
-				self.dismiss(animated: true, completion: nil)
+				MyPhotoSelectManager.defaultManager.doSend(vcToDismiss: self)
 			})
 			
 			alert.addAction(cancelAction)
 			alert.addAction(doneAction)
 			
-			self.present(alert, animated: true, completion: nil)
+			present(alert, animated: true, completion: nil)
 		} else {
-			print(MyPhotoSelectManager.defaultManager.m_selectedItems)
-			self.dismiss(animated: true, completion: nil)
-			MyPhotoSelectManager.defaultManager.clearData()
+			MyPhotoSelectManager.defaultManager.doSend(vcToDismiss: self)
 		}
     }
+	
 }
 
 extension MyPhotoPreviewVC: UIScrollViewDelegate {
@@ -350,10 +352,13 @@ extension MyPhotoPreviewVC: PHPhotoLibraryChangeObserver {
 				let alert = UIAlertController.init(title: "您之前预览的照片已被删除", message: "", preferredStyle: .alert)
 				alert.addAction(UIAlertAction(title: "确定", style: .cancel, handler: nil))
 				
-				self.present(alert, animated: true, completion: nil)
+				present(alert, animated: true, completion: nil)
 				
 			} else {
 				m_allAssets[m_curIndexPath.item] = details.objectAfterChanges as! PHAsset
+				if let index = m_assets.index(of: asset) {
+					m_assets[index] = details.objectAfterChanges as! PHAsset
+				}
 				
 				// If the asset's content changed, update the image and stop any video playback.
 				if details.assetContentChanged {

@@ -19,7 +19,7 @@ class MyPhotoPickerCell: UITableViewCell {
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
-		self.layoutMargins = UIEdgeInsets.zero
+		layoutMargins = UIEdgeInsets.zero
 	}
 	
 	static func getCellHeight() -> CGFloat {
@@ -31,10 +31,10 @@ class MyPhotoPickerCell: UITableViewCell {
 	}
 	
 	func updateRowWithData(_ data: MyPhotoAlbumItem) {
-		self.m_title.text = data.m_title;
+		m_title.text = data.m_title;
 		
 		let content: PHFetchResult = data.m_content
-		self.m_count.text = "(\(content.count))";
+		m_count.text = "(\(content.count))";
 		
 		
 		let lastAssert = content.lastObject as! PHAsset

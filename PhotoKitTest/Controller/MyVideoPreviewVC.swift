@@ -137,7 +137,7 @@ extension MyVideoPreviewVC {
 
 extension MyVideoPreviewVC {
 	@IBAction func backClick(_ sender: AnyObject) {
-		_ = self.navigationController?.popViewController(animated: true)
+		_ = navigationController?.popViewController(animated: true)
 	}
 	
 	@IBAction func playClick(_ sender: AnyObject) {
@@ -162,6 +162,8 @@ extension MyVideoPreviewVC {
 	}
 	
 	@IBAction func doneClick(_ sender: AnyObject) {
+		print(m_asset)
+		dismiss(animated: true, completion: nil)
 	}
 	
 	@IBAction func sliderDown(_ sender: AnyObject) {

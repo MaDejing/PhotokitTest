@@ -33,17 +33,17 @@ class MyPhotoPickerVC: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		self.title = "照片库"
+		title = "照片库"
 		
 		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(self.cancel) )
-		self.navigationItem.rightBarButtonItem = rightBarItem
+		navigationItem.rightBarButtonItem = rightBarItem
 		
 		// 列出所有相册智能相册
 		m_smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: PHFetchOptions())
-		self.convertCollection(m_smartAlbums)
+		convertCollection(m_smartAlbums)
 		
 		m_cloudAlbums = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: PHFetchOptions())
-		self.convertCollection(m_cloudAlbums)
+		convertCollection(m_cloudAlbums)
 		
 		PHPhotoLibrary.shared().register(self)
 		
@@ -60,10 +60,10 @@ class MyPhotoPickerVC: UIViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		if (self.m_firstLoad) {
-			self.pushToAlbumDetail(0, animated: false)
+		if (m_firstLoad) {
+			pushToAlbumDetail(0, animated: false)
 			
-			self.m_firstLoad = false
+			m_firstLoad = false
 		}
 	}
 	
@@ -98,9 +98,9 @@ extension MyPhotoPickerVC {
 				let newAlbumItem = MyPhotoAlbumItem(title: c.localizedTitle!, content: assetsFetchResult as! PHFetchResult<AnyObject>)
 				
 				if (c.localizedTitle == "我的照片流") {
-					self.m_albums.insert(newAlbumItem, at: 1)
+					m_albums.insert(newAlbumItem, at: 1)
 				} else {
-					self.m_albums.append(newAlbumItem)
+					m_albums.append(newAlbumItem)
 				}
 			}
 		}
@@ -110,23 +110,23 @@ extension MyPhotoPickerVC {
 		let sb = UIStoryboard(name: "Main", bundle: nil)
 		let vc = sb.instantiateViewController(withIdentifier: "MyPhotoGridVC") as! MyPhotoGridVC
 		
-		let album = self.m_albums[index]
+		let album = m_albums[index]
 		vc.m_fetchResult = album.m_content as! PHFetchResult<PHAsset>!
 		vc.title = album.m_title
 		
-		self.navigationController?.pushViewController(vc, animated: animated)
+		navigationController?.pushViewController(vc, animated: animated)
 	}
 }
 
 extension MyPhotoPickerVC: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return self.m_albums.count;
+		return m_albums.count;
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: MyPhotoPickerCell.getCellIdentifier(), for: indexPath) as! MyPhotoPickerCell
 		let row = (indexPath as NSIndexPath).row
-		let item = self.m_albums[row]
+		let item = m_albums[row]
 		cell.updateRowWithData(item)
 		
 		return cell
@@ -139,7 +139,7 @@ extension MyPhotoPickerVC: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		tableView.deselectRow(at: indexPath, animated: true)
 		
-		self.pushToAlbumDetail((indexPath as NSIndexPath).row, animated: true)
+		pushToAlbumDetail((indexPath as NSIndexPath).row, animated: true)
 	}
 }
 
@@ -149,13 +149,11 @@ extension MyPhotoPickerVC: PHPhotoLibraryChangeObserver {
 		DispatchQueue.main.sync {
 			var assetChanged = false
 
-//			let changeDetailsSmart: PHFetchResultChangeDetails! = changeInstance.changeDetails(for: m_smartAlbums)
 			if let changeDetailsSmart = changeInstance.changeDetails(for: m_smartAlbums) {
 				assetChanged = true
 				m_smartAlbums = changeDetailsSmart.fetchResultAfterChanges
 			}
 			
-//			let changeDetailsAlbums: PHFetchResultChangeDetails! = changeInstance.changeDetails(for: m_cloudAlbums)
 			if let changeDetailsAlbums = changeInstance.changeDetails(for: m_cloudAlbums) {
 				assetChanged = true
 				m_cloudAlbums = changeDetailsAlbums.fetchResultAfterChanges

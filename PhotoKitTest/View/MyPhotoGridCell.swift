@@ -34,7 +34,7 @@ class MyPhotoGridCell: UICollectionViewCell {
 	override func awakeFromNib() {
 		super.awakeFromNib()
 		
-		self.m_videoView.isHidden = true
+		m_videoView.isHidden = true
 	}
 	
 	static func getCellIndentifier() -> String {
@@ -42,7 +42,7 @@ class MyPhotoGridCell: UICollectionViewCell {
 	}
 	
 	func updateData(_ asset: PHAsset, size: CGSize, indexPath: IndexPath) {
-		self.m_representedAssetIdentifier = MyPhotoImageManager.defaultManager.getAssetIndentifier(asset)
+		m_representedAssetIdentifier = MyPhotoImageManager.defaultManager.getAssetIndentifier(asset)
 		
 		let option = PHImageRequestOptions()
 		option.resizeMode = .fast
@@ -61,23 +61,23 @@ class MyPhotoGridCell: UICollectionViewCell {
 			}
 		}
 				
-		if (self.m_imageRequestID != nil && imageRequestId != self.m_imageRequestID) {
-			PHImageManager.default().cancelImageRequest(self.m_imageRequestID)
+		if (m_imageRequestID != nil && imageRequestId != m_imageRequestID) {
+			PHImageManager.default().cancelImageRequest(m_imageRequestID)
 		}
 		
-		self.m_imageRequestID = imageRequestId
+		m_imageRequestID = imageRequestId
 	}
 	
 	func updateCellWithData(_ data: MyPhotoItem) {
-		self.m_data = data
+		m_data = data
 		
-		self.m_imageView.image = data.m_img
+		m_imageView.image = data.m_img
 		
-		self.m_videoView.isHidden = !(data.m_asset.mediaType == .video)
+		m_videoView.isHidden = !(data.m_asset.mediaType == .video)
 		
 		if (data.m_asset.mediaType == .video) {
 			let length = Int(round(data.m_asset.duration))
-			self.m_videoLength.text = self.getShowVideoLength(length)
+			m_videoLength.text = getShowVideoLength(length)
 		}
 	}
 	
@@ -100,7 +100,7 @@ class MyPhotoGridCell: UICollectionViewCell {
 		let button  = sender as! UIButton
 //		button.selected = !button.selected;
 		
-		self.m_delegate!.myPhotoGridCellButtonSelect(self, selected: button.isSelected)
+		m_delegate!.myPhotoGridCellButtonSelect(self, selected: button.isSelected)
 	}
 	
 }

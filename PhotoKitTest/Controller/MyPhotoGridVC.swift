@@ -10,16 +10,6 @@ import Foundation
 import UIKit
 import Photos
 
-let kScreenWidth = UIScreen.main.bounds.width
-let kScreenHeight = UIScreen.main.bounds.height
-
-private extension UICollectionView {
-	func indexPathsForElements(in rect: CGRect) -> [IndexPath] {
-		let allLayoutAttributes = collectionViewLayout.layoutAttributesForElements(in: rect)!
-		return allLayoutAttributes.map { $0.indexPath }
-	}
-}
-
 class MyPhotoItem: NSObject {
 	var m_img: UIImage! = UIImage()
 	var m_asset: PHAsset! = PHAsset()
@@ -41,20 +31,20 @@ class MyPhotoGridVC: UIViewController {
 	@IBOutlet weak var m_toolBar: UIToolbar!
 	
 	/// 视图相关
-	fileprivate let m_selectedLabelWidth: CGFloat = 30
-	
 	fileprivate lazy var m_selectedBgView: UIView = {
-		var tempBgView = UIView.init(frame: CGRect(x: kScreenWidth-56-28, y: (44-self.m_selectedLabelWidth)/2, width: self.m_selectedLabelWidth, height: self.m_selectedLabelWidth))
-		tempBgView.backgroundColor = UIColor(red: 31/255.0, green: 183/255.0, blue: 27/255.0, alpha: 1)
-		tempBgView.layer.cornerRadius = 15
+		var tempBgView = UIView.init(frame: CGRect(x: kScreenWidth-56-28, y: (44-kSelectedLabelWidth)/2, width: kSelectedLabelWidth, height: kSelectedLabelWidth))
+		tempBgView.backgroundColor = kThemeColor
+		tempBgView.layer.cornerRadius = kSelectedLabelWidth / 2
 		tempBgView.layer.masksToBounds = true
 		
 		return tempBgView
 	}()
 	
 	fileprivate lazy var m_selectedLabel: UILabel = {
-		var tempLabel = UILabel.init(frame: CGRect(x: kScreenWidth-56-28, y: (44-self.m_selectedLabelWidth)/2, width: self.m_selectedLabelWidth, height: self.m_selectedLabelWidth))
-		tempLabel.font = UIFont(name: "PingFang-SC-Regular", size: 15)
+		var tempLabel = UILabel.init()
+		
+		tempLabel.frame = self.m_selectedBgView.frame
+		tempLabel.font = kSelectedLabelFont
 		tempLabel.textColor = UIColor.white
 		tempLabel.textAlignment = .center
 		tempLabel.backgroundColor = UIColor.clear
@@ -145,8 +135,8 @@ extension MyPhotoGridVC {
 	func updateAllAssets() {
 		m_allAssets.removeAll()
 		
-		for i in 0 ..< self.m_fetchResult.count {
-			let asset = self.m_fetchResult[i]
+		for i in 0 ..< m_fetchResult.count {
+			let asset = m_fetchResult[i]
 			m_allAssets.append(asset)
 		}
 	}
@@ -246,8 +236,7 @@ extension MyPhotoGridVC {
 			let alert = UIAlertController(title: "视频将作为照片发送", message: "如需发送视频，请取消所有选择，点击视频进入视频预览进行发送", preferredStyle: .alert)
 			let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
 			let doneAction = UIAlertAction(title: "确定", style: .default, handler: { (action) in
-				print(MyPhotoSelectManager.defaultManager.m_selectedItems)
-				self.dismiss(animated: true, completion: nil)
+				MyPhotoSelectManager.defaultManager.doSend(vcToDismiss: self)
 			})
 			
 			alert.addAction(cancelAction)
@@ -255,9 +244,7 @@ extension MyPhotoGridVC {
 			
 			present(alert, animated: true, completion: nil)
 		} else {
-			print(MyPhotoSelectManager.defaultManager.m_selectedItems)
-			self.dismiss(animated: true, completion: nil)
-			MyPhotoSelectManager.defaultManager.clearData()
+			MyPhotoSelectManager.defaultManager.doSend(vcToDismiss: self)
 		}
 	}
 }
@@ -304,7 +291,7 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 
 		if (asset.mediaType == .video) {
 			if MyPhotoSelectManager.defaultManager.m_selectedItems.count > 0 {
-				let alert = UIAlertController(title: nil, message: "选择多项时不能预览单个视频", preferredStyle: .alert)
+				let alert = UIAlertController(title: "已选择时不能预览单个视频", message: "取消所有选择，点击视频可进行视频预览", preferredStyle: .alert)
 				let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
 				alert.addAction(cancelAction)
 				

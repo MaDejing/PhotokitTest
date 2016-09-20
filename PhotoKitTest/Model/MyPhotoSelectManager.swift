@@ -19,6 +19,8 @@ class MySelectedItem: NSObject {
 	}
 }
 
+let maxCount: Int = 9
+
 class MyPhotoSelectManager: NSObject {
 	
 	var m_selectedItems: [MySelectedItem] = []
@@ -28,8 +30,8 @@ class MyPhotoSelectManager: NSObject {
 	static let defaultManager: MyPhotoSelectManager = MyPhotoSelectManager()
 	
 	func updateSelectItems(_ vcToShowAlert: UIViewController, selected: Bool, button: UIButton, selectedItem: MySelectedItem) {
-		if self.m_selectedItems.count >= 9 && !selected {
-			let alert = UIAlertController(title: nil, message: "最多可选择9张照片", preferredStyle: .alert)
+		if self.m_selectedItems.count >= maxCount && !selected {
+			let alert = UIAlertController(title: nil, message: "最多可选择\(maxCount)张照片", preferredStyle: .alert)
 			let cancelAction = UIAlertAction(title: "确定", style: .cancel, handler: nil)
 			
 			alert.addAction(cancelAction)
@@ -66,6 +68,12 @@ class MyPhotoSelectManager: NSObject {
 	func clearData() {
 		self.m_selectedItems.removeAll()
 		self.m_selectedIndex.removeAll()
+	}
+	
+	func doSend(vcToDismiss: UIViewController) {
+		print(MyPhotoSelectManager.defaultManager.m_selectedItems)
+		vcToDismiss.dismiss(animated: true, completion: nil)
+		MyPhotoSelectManager.defaultManager.clearData()
 	}
 
 }
