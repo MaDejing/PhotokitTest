@@ -10,12 +10,15 @@ import Foundation
 import UIKit
 import Photos
 
+// MARK: - MyPhotoPreviewVCDelegate
 protocol MyPhotoPreviewVCDelegate: NSObjectProtocol {
 	func afterChangeSelectedItem(_ vc: MyPhotoPreviewVC)
 }
 
+// MARK: - Class - 预览
 class MyPhotoPreviewVC: UIViewController {
 	
+	/// storyboard 相关
 	@IBOutlet weak var m_topView: UIView!
 	@IBOutlet weak var m_collectionView: UICollectionView!
     @IBOutlet weak var m_selectButton: UIButton!
@@ -26,6 +29,7 @@ class MyPhotoPreviewVC: UIViewController {
 	@IBOutlet weak var m_originActIndicator: UIActivityIndicatorView!
 	@IBOutlet weak var m_originLabel: UILabel!
 
+    /// UICollectionview 视图相关
     let m_minLineSpace: CGFloat = 10.0
     let m_minItemSpace: CGFloat = 0.0
     let m_collectionTop: CGFloat = 0
@@ -33,6 +37,7 @@ class MyPhotoPreviewVC: UIViewController {
     let m_collectionBottom: CGFloat = 0
     let m_collectionRight: CGFloat = 0
 	
+    /// 已选数目 视图相关
     fileprivate lazy var m_selectedBgView: UIView = {
         var tempBgView = UIView.init(frame: CGRect(x: kScreenWidth-84, y: (44-kSelectedLabelWidth)/2, width: kSelectedLabelWidth, height: kSelectedLabelWidth))
         tempBgView.backgroundColor = kThemeColor
@@ -79,22 +84,22 @@ class MyPhotoPreviewVC: UIViewController {
 		
 		PHPhotoLibrary.shared().register(self)
 		
-        self.initSubViews()
+        initSubViews()
     }
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
         
-        self.m_collectionView.layoutIfNeeded()
-        self.m_collectionView.scrollToItem(at: IndexPath.init(item: self.m_firstIndexPath.item, section: 0), at: .left, animated: false)
+        m_collectionView.layoutIfNeeded()
+        m_collectionView.scrollToItem(at: IndexPath.init(item: m_firstIndexPath.item, section: 0), at: .left, animated: false)
 		
-		self.navigationController?.setNavigationBarHidden(true, animated: false)
+		navigationController?.setNavigationBarHidden(true, animated: false)
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
 		
-		self.navigationController?.setNavigationBarHidden(false, animated: false)
+		navigationController?.setNavigationBarHidden(false, animated: false)
 	}
 	
 	deinit {
@@ -106,29 +111,30 @@ class MyPhotoPreviewVC: UIViewController {
 	}
 }
 
+// MARK: - Initial & Update Funtions
 extension MyPhotoPreviewVC {
     
     func initSubViews() {
-        self.initWithCollectionView()
+        initWithCollectionView()
         
-        self.m_bottomView.addSubview(self.m_selectedBgView)
-        self.m_bottomView.addSubview(self.m_selectedLabel)
+        m_bottomView.addSubview(m_selectedBgView)
+        m_bottomView.addSubview(m_selectedLabel)
 		
 		initWithOriginView()
         updateBottomView()
     }
     
     func initWithCollectionView() {
-        self.m_collectionView.backgroundColor = UIColor.black
-        self.m_collectionView.register(MyPhotoPreviewCell.self, forCellWithReuseIdentifier: MyPhotoPreviewCell.getCellIdentifier())
+        m_collectionView.backgroundColor = UIColor.black
+        m_collectionView.register(MyPhotoPreviewCell.self, forCellWithReuseIdentifier: MyPhotoPreviewCell.getCellIdentifier())
         
         let collectionViewFlowLayout = UICollectionViewFlowLayout()
-        collectionViewFlowLayout.minimumLineSpacing = self.m_minLineSpace
-        collectionViewFlowLayout.minimumInteritemSpacing = self.m_minItemSpace
-        collectionViewFlowLayout.sectionInset = UIEdgeInsetsMake(self.m_collectionTop, self.m_collectionLeft, self.m_collectionBottom, self.m_collectionRight)
+        collectionViewFlowLayout.minimumLineSpacing = m_minLineSpace
+        collectionViewFlowLayout.minimumInteritemSpacing = m_minItemSpace
+        collectionViewFlowLayout.sectionInset = UIEdgeInsetsMake(m_collectionTop, m_collectionLeft, m_collectionBottom, m_collectionRight)
         collectionViewFlowLayout.itemSize = CGSize(width: kScreenWidth, height: kScreenHeight)
         collectionViewFlowLayout.scrollDirection = .horizontal
-        self.m_collectionView.collectionViewLayout = collectionViewFlowLayout
+        m_collectionView.collectionViewLayout = collectionViewFlowLayout
     }
 	
 	func initWithOriginView() {
@@ -143,17 +149,18 @@ extension MyPhotoPreviewVC {
     }
 	
     func showSelectLabel() {
-        self.m_selectedBgView.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
-        self.m_selectedBgView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions(), animations: {
+        m_selectedBgView.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
+        m_selectedBgView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0, options: UIViewAnimationOptions(), animations: {
             self.m_selectedBgView.transform = CGAffineTransform.identity
-            }, completion: nil)
+            })
         
-        self.m_selectedLabel.text = "\(MyPhotoSelectManager.defaultManager.m_selectedItems.count)"
-        self.m_selectedLabel.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
+        m_selectedLabel.text = "\(MyPhotoSelectManager.defaultManager.m_selectedItems.count)"
+        m_selectedLabel.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
     }
 }
 
+// MARK: - 方法
 extension MyPhotoPreviewVC {
 	fileprivate func calImageSize(_ asset: PHAsset, scale: CGFloat) -> CGSize {
 		// 计算图片大小
@@ -182,40 +189,43 @@ extension MyPhotoPreviewVC {
 		if (MyPhotoImageManager.defaultManager.m_isAllowOrigin) {
 			m_originActIndicator.startAnimating()
 			
-			PHImageManager.default().requestImageData(for: m_allAssets[assetIndex], options: nil) { (imageData, _, _, _) in
+			PHImageManager.default().requestImageData(for: m_allAssets[assetIndex], options: nil) {
+				[weak self] (imageData, _, _, _) in
 				
-				let byteStr = self.getBytesFromDataLength((imageData?.count)!)
+				guard let weakSelf = self else { return }
+				let byteStr = weakSelf.getBytesFromDataLength((imageData?.count)!)
 				
 				DispatchQueue.main.asyncAfter(deadline: .now()+0.15, execute: {
-					self.m_originLabel.text = byteStr
-					self.m_originActIndicator.stopAnimating()
-					self.m_originLabel.isHidden = false
+					weakSelf.m_originLabel.text = byteStr
+					weakSelf.m_originActIndicator.stopAnimating()
+					weakSelf.m_originLabel.isHidden = false
 				})
 			}
 		} else {
 			m_originActIndicator.stopAnimating()
-			self.m_originLabel.isHidden = true
+			m_originLabel.isHidden = true
 		}
 	}
 }
 
+// MARK: - IBActions
 extension MyPhotoPreviewVC {
 	
 	@IBAction func backClick(_ sender: AnyObject) {
-        self.m_delegate?.afterChangeSelectedItem(self)
+        m_delegate?.afterChangeSelectedItem(self)
         
-		_ = self.navigationController?.popViewController(animated: true)
+		_ = navigationController?.popViewController(animated: true)
 	}
 	
 	@IBAction func selectClick(_ sender: AnyObject) {
-		let selectedItem = MySelectedItem.init(asset: self.m_allAssets[self.m_curIndexPath.item], index: self.m_curIndexPath)
-		MyPhotoSelectManager.defaultManager.updateSelectItems(self, selected: self.m_selectButton.isSelected, button: self.m_selectButton, selectedItem: selectedItem)
-		self.updateBottomView()
+		let selectedItem = MySelectedItem.init(asset: m_allAssets[m_curIndexPath.item], index: m_curIndexPath)
+		MyPhotoSelectManager.defaultManager.updateSelectItems(vcToShowAlert: self, button: m_selectButton, selectedItem: selectedItem)
+		updateBottomView()
 	}
 	
 	@IBAction func originClick(_ sender: AnyObject) {
-		if !MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(self.m_curIndexPath) && !m_originButton.isSelected {
-			self.selectClick(m_selectButton)
+		if !MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(m_curIndexPath) && !m_originButton.isSelected {
+			selectClick(m_selectButton)
 		}
 		
 		m_originButton.isSelected = !m_originButton.isSelected
@@ -252,6 +262,7 @@ extension MyPhotoPreviewVC {
 	
 }
 
+// MARK: - UIScrollViewDelegate
 extension MyPhotoPreviewVC: UIScrollViewDelegate {
 	func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 		if scrollView == m_collectionView {
@@ -299,16 +310,18 @@ extension MyPhotoPreviewVC: UIScrollViewDelegate {
 	}
 }
 
+// MARK: - MyPhotoPreviewCellDelegate
 extension MyPhotoPreviewVC: MyPhotoPreviewCellDelegate {
 	func afterSingleTap(_ cell: MyPhotoPreviewCell) {
-		self.m_topView.isHidden = !self.m_topView.isHidden
-        self.m_bottomView.isHidden = !self.m_bottomView.isHidden
+		m_topView.isHidden = !m_topView.isHidden
+        m_bottomView.isHidden = !m_bottomView.isHidden
 	}
 }
 
-extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
+extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return self.m_assets.count
+		return m_assets.count
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -317,12 +330,12 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
 		
 		cell.m_delegate = self
         
-		let asset = self.m_assets[indexPath.item]
+		let asset = m_assets[indexPath.item]
         
-        self.m_curIndexPath = IndexPath.init(item: self.m_allAssets.index(of: asset)!, section: 0)
-        self.m_selectButton.isSelected = MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(self.m_curIndexPath)
+        m_curIndexPath = IndexPath.init(item: m_allAssets.index(of: asset)!, section: 0)
+        m_selectButton.isSelected = MyPhotoSelectManager.defaultManager.m_selectedIndex.contains(m_curIndexPath)
 		
-		cell.updateData(asset, size: self.calImageSize(asset, scale: 2.0), indexPath: indexPath)
+		cell.updateData(asset, size: calImageSize(asset, scale: 2.0), indexPath: indexPath)
 
 		return cell
 	}
@@ -333,40 +346,50 @@ extension MyPhotoPreviewVC: UICollectionViewDelegate, UICollectionViewDataSource
 	}
 }
 
+// MARK: - PHPhotoLibraryChangeObserver
 extension MyPhotoPreviewVC: PHPhotoLibraryChangeObserver {
 	
 	func photoLibraryDidChange(_ changeInstance: PHChange) {
+
 		DispatchQueue.main.sync {
+			// 更新已选数据和视图
+			MyPhotoSelectManager.defaultManager.clearData()
+			updateBottomView()
+			m_selectButton.isSelected = false
+
 			let asset = m_allAssets[m_curIndexPath.item]
-			let cell = m_collectionView.cellForItem(at: m_curIndexPath) as! MyPhotoPreviewCell
 			
 			guard let details = changeInstance.changeDetails(for: asset) else { return }
 			
 			if details.objectWasDeleted {
 				m_allAssets.remove(at: m_curIndexPath.item)
-				
 				if let index = m_assets.index(of: asset) {
 					m_assets.remove(at: index)
 				}
 				
 				let alert = UIAlertController.init(title: "您之前预览的照片已被删除", message: "", preferredStyle: .alert)
-				alert.addAction(UIAlertAction(title: "确定", style: .cancel, handler: nil))
-				
+				alert.addAction(UIAlertAction(title: "确定", style: .cancel, handler: { (alertAction) in
+					if self.m_assets.isEmpty {
+						_ = self.navigationController?.popViewController(animated: true)
+					}
+				}))
+
 				present(alert, animated: true, completion: nil)
 				
 			} else {
-				m_allAssets[m_curIndexPath.item] = details.objectAfterChanges as! PHAsset
+				let assetAfterChange = details.objectAfterChanges as! PHAsset
+				m_allAssets[m_curIndexPath.item] = assetAfterChange
 				if let index = m_assets.index(of: asset) {
-					m_assets[index] = details.objectAfterChanges as! PHAsset
+					m_assets[index] = assetAfterChange
 				}
 				
-				// If the asset's content changed, update the image and stop any video playback.
 				if details.assetContentChanged {
-					cell.updateData(asset, size: self.calImageSize(asset, scale: 2.0), indexPath: m_curIndexPath)
+					let cell = m_collectionView.cellForItem(at: m_curIndexPath) as! MyPhotoPreviewCell
+					cell.updateData(assetAfterChange, size: calImageSize(asset, scale: 2.0), indexPath: m_curIndexPath)
 				}
 			}
 			
-			self.m_collectionView.reloadData()
+			m_collectionView.reloadData()
 		}
 	}
 }

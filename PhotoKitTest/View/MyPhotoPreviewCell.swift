@@ -91,18 +91,26 @@ class MyPhotoPreviewCell: UICollectionViewCell {
 		let option = PHImageRequestOptions()
 		option.deliveryMode = .opportunistic
 		option.isSynchronous = true
-		option.progressHandler = { progress, _, _, _ in
+		option.progressHandler = {
+			[weak self] progress, _, _, _ in
+			
+			guard let weakSelf = self else { return }
+			
 			DispatchQueue.main.sync {
-				self.m_scrollView.isHidden = true
-				self.m_actIndicator.startAnimating()
-				self.bringSubview(toFront: self.m_actIndicator)
+				weakSelf.m_scrollView.isHidden = true
+				weakSelf.m_actIndicator.startAnimating()
+				weakSelf.bringSubview(toFront: weakSelf.m_actIndicator)
 			}
 		}
 		
-		let _ = MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
+		let _ = MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) {
+			[weak self] (image, _, _) in
+			
+			guard let weakSelf = self else { return }
+
 			let item = MyPhotoItem()
 			item.updateWithData(image, asset: asset, index: indexPath)
-			self.updateCellWithData(item)
+			weakSelf.updateCellWithData(item)
 		}
 	}
 	

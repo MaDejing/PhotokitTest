@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import Photos
 
+// MARK: - Class - 相册
 class MyPhotoAlbumItem: NSObject {
 	var m_title: String = ""
 	var m_content: PHFetchResult<AnyObject>!
@@ -20,15 +21,21 @@ class MyPhotoAlbumItem: NSObject {
 	}
 }
 
+// MARK: - Class - 相册展示
 class MyPhotoPickerVC: UIViewController {
 	
+	/// Storyboard 相关
 	@IBOutlet weak var m_tableView: UITableView!
 	
+	/// 相册数组
 	fileprivate lazy var m_albums: [MyPhotoAlbumItem] = []
+	
+	/// 是否第一次出现（第一次出现时直接展示相册胶卷）
 	fileprivate var m_firstLoad: Bool = true
 	
+	/// 智能相册 & 其他相册
 	var m_smartAlbums: PHFetchResult<PHAssetCollection>!
-	var m_cloudAlbums: PHFetchResult<PHAssetCollection>!
+	var m_otherAlbums: PHFetchResult<PHAssetCollection>!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -38,23 +45,17 @@ class MyPhotoPickerVC: UIViewController {
 		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(self.cancel) )
 		navigationItem.rightBarButtonItem = rightBarItem
 		
-		// 列出所有相册智能相册
 		m_smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: PHFetchOptions())
 		convertCollection(m_smartAlbums)
 		
-		m_cloudAlbums = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: PHFetchOptions())
-		convertCollection(m_cloudAlbums)
+		m_otherAlbums = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: PHFetchOptions())
+		convertCollection(m_otherAlbums)
 		
 		PHPhotoLibrary.shared().register(self)
 		
 //		//列出用户创建的相册
 //		let topLevelUserCollections: PHFetchResult = PHCollectionList.fetchTopLevelUserCollectionsWithOptions(nil)
 //		self.convertCollection(topLevelUserCollections)
-		
-//		//相册按包含的照片数量排序（降序）
-//		self.m_items.sortInPlace { (item1, item2) -> Bool in
-//			return item1.m_content.count > item2.m_content.count
-//		}
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -78,21 +79,19 @@ class MyPhotoPickerVC: UIViewController {
 	
 }
 
+// MARK: - 方法
 extension MyPhotoPickerVC {
 	func cancel() {
-		self.dismiss(animated: true, completion: nil)
+		dismiss(animated: true, completion: nil)
 	}
 	
 	fileprivate func convertCollection(_ collection: PHFetchResult<PHAssetCollection>) {
 		for i in 0 ..< collection.count {
-			// 获取所有资源的集合，并按资源的创建时间排序
+			/// 获取所有资源的集合，并按资源的创建时间排序
 			let resultsOptions = PHFetchOptions()
-			//这里是按照创建时间排序
 			resultsOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-			//			resultsOptions.predicate = NSPredicate(format: "mediaType = %d", PHAssetMediaType.Image.rawValue)
 			
 			let c = collection[i]
-			
 			let assetsFetchResult: PHFetchResult = PHAsset.fetchAssets(in: c, options: resultsOptions)
 			if assetsFetchResult.count > 0 {
 				let newAlbumItem = MyPhotoAlbumItem(title: c.localizedTitle!, content: assetsFetchResult as! PHFetchResult<AnyObject>)
@@ -118,6 +117,7 @@ extension MyPhotoPickerVC {
 	}
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
 extension MyPhotoPickerVC: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		return m_albums.count;
@@ -143,6 +143,7 @@ extension MyPhotoPickerVC: UITableViewDelegate, UITableViewDataSource {
 	}
 }
 
+// MARK: - PHPhotoLibraryChangeObserver
 extension MyPhotoPickerVC: PHPhotoLibraryChangeObserver {
 	
 	func photoLibraryDidChange(_ changeInstance: PHChange) {
@@ -154,9 +155,9 @@ extension MyPhotoPickerVC: PHPhotoLibraryChangeObserver {
 				m_smartAlbums = changeDetailsSmart.fetchResultAfterChanges
 			}
 			
-			if let changeDetailsAlbums = changeInstance.changeDetails(for: m_cloudAlbums) {
+			if let changeDetailsAlbums = changeInstance.changeDetails(for: m_otherAlbums) {
 				assetChanged = true
-				m_cloudAlbums = changeDetailsAlbums.fetchResultAfterChanges
+				m_otherAlbums = changeDetailsAlbums.fetchResultAfterChanges
 			}
 			
 			if !assetChanged {
@@ -174,11 +175,11 @@ extension MyPhotoPickerVC: PHPhotoLibraryChangeObserver {
 			}
 
 			if !assetChanged {
-				for i in 0 ..< m_cloudAlbums.count {
+				for i in 0 ..< m_otherAlbums.count {
 					let resultsOptions = PHFetchOptions()
 					resultsOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
 					
-					let assetsFetchResult: PHFetchResult = PHAsset.fetchAssets(in: m_cloudAlbums[i], options: resultsOptions)
+					let assetsFetchResult: PHFetchResult = PHAsset.fetchAssets(in: m_otherAlbums[i], options: resultsOptions)
 					
 					if let _ = changeInstance.changeDetails(for: assetsFetchResult) {
 						assetChanged = true
@@ -190,7 +191,7 @@ extension MyPhotoPickerVC: PHPhotoLibraryChangeObserver {
 			if assetChanged {
 				m_albums.removeAll()
 				convertCollection(m_smartAlbums)
-				convertCollection(m_cloudAlbums)
+				convertCollection(m_otherAlbums)
 				m_tableView.reloadData()
 			}
 			

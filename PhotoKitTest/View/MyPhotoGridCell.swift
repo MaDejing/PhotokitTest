@@ -11,7 +11,7 @@ import UIKit
 import Photos
 
 protocol MyPhotoGridCellDelegate: NSObjectProtocol {
-	func myPhotoGridCellButtonSelect(_ cell: MyPhotoGridCell, selected: Bool)
+	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell)
 }
 
 class MyPhotoGridCell: UICollectionViewCell {
@@ -47,17 +47,21 @@ class MyPhotoGridCell: UICollectionViewCell {
 		let option = PHImageRequestOptions()
 		option.resizeMode = .fast
 		
-		let imageRequestId = MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) { (image, info, isDegraded) in
-			if (self.m_representedAssetIdentifier == MyPhotoImageManager.defaultManager.getAssetIndentifier(asset)) {
+		let imageRequestId = MyPhotoImageManager.defaultManager.getPhotoWithAsset(asset, size: size, options: option) {
+			[weak self] (image, _, isDegraded) in
+			
+			guard let weakSelf = self else { return }
+			
+			if (weakSelf.m_representedAssetIdentifier == MyPhotoImageManager.defaultManager.getAssetIndentifier(asset)) {
 				let item = MyPhotoItem()
 				item.updateWithData(image, asset: asset, index: indexPath)
-				self.updateCellWithData(item)
+				weakSelf.updateCellWithData(item)
 			} else {
-				PHImageManager.default().cancelImageRequest(self.m_imageRequestID)
+				PHImageManager.default().cancelImageRequest(weakSelf.m_imageRequestID)
 			}
 			
 			if (!isDegraded) {
-				self.m_imageRequestID = 0
+				weakSelf.m_imageRequestID = 0
 			}
 		}
 				
@@ -97,10 +101,7 @@ class MyPhotoGridCell: UICollectionViewCell {
 	}
 	
 	@IBAction func photoSelect(_ sender: AnyObject) {
-		let button  = sender as! UIButton
-//		button.selected = !button.selected;
-		
-		m_delegate!.myPhotoGridCellButtonSelect(self, selected: button.isSelected)
+		m_delegate!.myPhotoGridCellButtonSelect(cell: self)
 	}
 	
 }

@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import Photos
 
+// MARK: - Class - 照片
 class MyPhotoItem: NSObject {
 	var m_img: UIImage! = UIImage()
 	var m_asset: PHAsset! = PHAsset()
@@ -22,6 +23,7 @@ class MyPhotoItem: NSObject {
 	}
 }
 
+// MARK: - Class - 照片展示VC
 class MyPhotoGridVC: UIViewController {
 	
 	/// StoryBoard相关
@@ -30,7 +32,7 @@ class MyPhotoGridVC: UIViewController {
 	@IBOutlet weak var m_done: UIBarButtonItem!
 	@IBOutlet weak var m_toolBar: UIToolbar!
 	
-	/// 视图相关
+	/// 已选数目展示 相关
 	fileprivate lazy var m_selectedBgView: UIView = {
 		var tempBgView = UIView.init(frame: CGRect(x: kScreenWidth-56-28, y: (44-kSelectedLabelWidth)/2, width: kSelectedLabelWidth, height: kSelectedLabelWidth))
 		tempBgView.backgroundColor = kThemeColor
@@ -62,7 +64,8 @@ class MyPhotoGridVC: UIViewController {
 	
 	/// 数据相关
 	var m_fetchResult: PHFetchResult<PHAsset>!
-    
+	
+    /// 所有照片资源数组
     fileprivate var m_allAssets: [PHAsset]! = []
 	
 	/// 加载图片相关
@@ -73,10 +76,6 @@ class MyPhotoGridVC: UIViewController {
 	/// 点击返回按钮是pop出去还是进入预览
 	fileprivate var m_isPop = true
 	
-    override func awakeFromNib() {
-		super.awakeFromNib()
-	}
-	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
@@ -85,15 +84,6 @@ class MyPhotoGridVC: UIViewController {
 		initData()
 		initSubViews()
     }
-
-	override func viewWillAppear(_ animated: Bool) {
-		super.viewWillAppear(animated)
-		
-    }
-	
-	override func viewDidAppear(_ animated: Bool) {
-		super.viewDidAppear(animated)
-	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
 		super.viewWillDisappear(animated)
@@ -121,7 +111,7 @@ class MyPhotoGridVC: UIViewController {
 
 // MARK: - Initial Functions
 extension MyPhotoGridVC {
-	func initData() {
+	fileprivate func initData() {
 		updateAllAssets()
 		initWithCollectionView()
 
@@ -132,16 +122,7 @@ extension MyPhotoGridVC {
         m_assetGridThumbnailSize = CGSize(width: cellSize.width*scale, height: cellSize.height*scale)
 	}
 	
-	func updateAllAssets() {
-		m_allAssets.removeAll()
-		
-		for i in 0 ..< m_fetchResult.count {
-			let asset = m_fetchResult[i]
-			m_allAssets.append(asset)
-		}
-	}
-	
-	func initSubViews() {
+	fileprivate func initSubViews() {
 		let rightBarItem = UIBarButtonItem(title: "取消", style: UIBarButtonItemStyle.plain, target: self, action:#selector(self.cancel))
 		navigationItem.rightBarButtonItem = rightBarItem
         
@@ -153,7 +134,7 @@ extension MyPhotoGridVC {
 		updateToolBarView()
 	}
     
-    func initWithCollectionView() {
+    fileprivate func initWithCollectionView() {
         m_collectionView.backgroundColor = UIColor.white
         m_collectionView.allowsMultipleSelection = true
         
@@ -165,8 +146,36 @@ extension MyPhotoGridVC {
         collectionViewFlowLayout.itemSize = CGSize(width: width, height: width)
         m_collectionView.collectionViewLayout = collectionViewFlowLayout
     }
+
+}
+
+// MARK: - Update Functions
+extension MyPhotoGridVC {
 	
-	func scrollToBottom() {
+	fileprivate func enableItems() {
+		let enable = MyPhotoSelectManager.defaultManager.m_selectedItems.count > 0
+		
+		m_preview.isEnabled = enable
+		m_done.isEnabled = enable
+	}
+	
+	fileprivate func showSelectLabel() {
+		m_selectedBgView.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
+		m_selectedBgView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+		UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0, options: UIViewAnimationOptions(), animations: {
+			self.m_selectedBgView.transform = CGAffineTransform.identity
+			}, completion: nil)
+		
+		m_selectedLabel.text = "\(MyPhotoSelectManager.defaultManager.m_selectedItems.count)"
+		m_selectedLabel.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
+	}
+	
+	fileprivate func updateToolBarView() {
+		showSelectLabel()
+		enableItems()
+	}
+	
+	fileprivate func scrollToBottom() {
 		m_collectionView.layoutIfNeeded()
 		
 		let contentSize = m_collectionView.contentSize
@@ -176,31 +185,19 @@ extension MyPhotoGridVC {
 		}
 	}
 	
-	func updateToolBarView() {
-		showSelectLabel()
-		enableItems()
+	fileprivate func updateAllAssets() {
+		m_allAssets.removeAll()
+		
+		for i in 0 ..< m_fetchResult.count {
+			let asset = m_fetchResult[i]
+			m_allAssets.append(asset)
+		}
 	}
 }
 
+// MARK: - Functions
 extension MyPhotoGridVC {
-	fileprivate func enableItems() {
-		let enable = MyPhotoSelectManager.defaultManager.m_selectedItems.count > 0
 
-		m_preview.isEnabled = enable
-		m_done.isEnabled = enable
-	}
-	
-	fileprivate func showSelectLabel() {
-		m_selectedBgView.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
-		m_selectedBgView.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
-		UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: UIViewAnimationOptions(), animations: {
-			self.m_selectedBgView.transform = CGAffineTransform.identity
-			}, completion: nil)
-		
-		m_selectedLabel.text = "\(MyPhotoSelectManager.defaultManager.m_selectedItems.count)"
-		m_selectedLabel.isHidden = MyPhotoSelectManager.defaultManager.m_selectedItems.count <= 0
-	}
-	
 	func cancel() {
 		navigationController?.dismiss(animated: true, completion: nil)
 	}
@@ -249,11 +246,13 @@ extension MyPhotoGridVC {
 	}
 }
 
+// MARK: - MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate
 extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
-	func myPhotoGridCellButtonSelect(_ cell: MyPhotoGridCell, selected: Bool) {
+	func myPhotoGridCellButtonSelect(cell: MyPhotoGridCell) {
 		
 		let selectedItem = MySelectedItem.init(asset: cell.m_data.m_asset, index: cell.m_data.m_index)
-		MyPhotoSelectManager.defaultManager.updateSelectItems(self, selected: selected, button: cell.m_selectButton, selectedItem: selectedItem)
+		MyPhotoSelectManager.defaultManager.updateSelectItems(vcToShowAlert: self, button: cell.m_selectButton, selectedItem: selectedItem)
+		
 		updateToolBarView()
 	}
 	
@@ -265,7 +264,8 @@ extension MyPhotoGridVC: MyPhotoGridCellDelegate, MyPhotoPreviewVCDelegate {
     }
 }
 
-extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+// MARK: - UICollectionViewDelegate, UICollectionViewDataSource
+extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return m_fetchResult.count
 	}
@@ -319,12 +319,17 @@ extension MyPhotoGridVC: UICollectionViewDelegate, UICollectionViewDataSource, U
 	}
 }
 
+// MARK: - PHPhotoLibraryChangeObserver
 extension MyPhotoGridVC: PHPhotoLibraryChangeObserver {
 	
 	func photoLibraryDidChange(_ changeInstance: PHChange) {
 		guard let changes = changeInstance.changeDetails(for: m_fetchResult) else { return }
 		
 		DispatchQueue.main.sync {
+			// 更新已选数据和视图
+			MyPhotoSelectManager.defaultManager.clearData()
+			updateToolBarView()
+
 			m_fetchResult = changes.fetchResultAfterChanges
 			updateAllAssets()
 			

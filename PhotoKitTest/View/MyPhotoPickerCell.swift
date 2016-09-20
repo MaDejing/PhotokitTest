@@ -41,8 +41,11 @@ class MyPhotoPickerCell: UITableViewCell {
 		let imageWidth = MyPhotoPickerCell.getCellHeight()-10
 		let size = CGSize(width:imageWidth * 2.0, height: imageWidth * 2.0)
 		
-		PHImageManager.default().requestImage(for: lastAssert, targetSize: size, contentMode: .aspectFill, options: nil) { (image, nfo) in
-			self.m_imageView.image = image
+		PHImageManager.default().requestImage(for: lastAssert, targetSize: size, contentMode: .aspectFill, options: nil) {
+			[weak self] (image, _) in
+			
+			guard let weakSelf = self else { return }
+			weakSelf.m_imageView.image = image
 		}
 	}
 	
